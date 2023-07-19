@@ -1,7 +1,6 @@
 package cobo.blog.domain.Home.Data.Dto;
 
 import cobo.blog.global.Data.Entity.ProjectEntity;
-import cobo.blog.global.Data.Entity.SkillTagEntity;
 import lombok.Data;
 
 import java.util.List;
