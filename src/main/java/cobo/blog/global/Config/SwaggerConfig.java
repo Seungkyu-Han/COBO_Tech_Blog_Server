@@ -1,4 +1,4 @@
-package cobo.blog.Config;
+package cobo.blog.global.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(true)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("cobo.blog.Controller"))
+                .apis(RequestHandlerSelectors.basePackage("cobo.blog"))
                 .paths(PathSelectors.any())
                 .build();
     }
