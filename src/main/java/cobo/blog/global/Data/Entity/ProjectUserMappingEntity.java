@@ -1,16 +1,18 @@
 package cobo.blog.global.Data.Entity;
 
 import lombok.Data;
+import lombok.Getter;
 
 import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name = "ProjectUserMapping")
+@Getter
 public class ProjectUserMappingEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

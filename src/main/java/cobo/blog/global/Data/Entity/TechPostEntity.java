@@ -9,14 +9,12 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "Project")
-public class ProjectEntity {
+@Table(name = "TechPost")
+public class TechPostEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String imgUrl;
 
     private String title;
 
@@ -25,9 +23,11 @@ public class ProjectEntity {
 
     private String content;
 
-    @OneToMany(mappedBy = "user")
-    private List<ProjectUserMappingEntity> projectUserMappings;
+    @ManyToOne
+    @JoinColumn(name = "user")
+    private UserEntity user;
 
-    @OneToMany(mappedBy = "project")
-    private List<ProjectSkillTagMappingEntity> projectSkillTagMappings;
+    @OneToMany(mappedBy = "techPost")
+    private List<TechPostSkillTagMappingEntity> techPostSkillTagMappings;
+
 }

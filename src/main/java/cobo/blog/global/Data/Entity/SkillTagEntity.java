@@ -19,5 +19,4 @@ public class SkillTagEntity {
     @OneToMany(mappedBy = "skillTag")
     private List<ProjectSkillTagMappingEntity> projectSkillTagMappings;
 
-
 }

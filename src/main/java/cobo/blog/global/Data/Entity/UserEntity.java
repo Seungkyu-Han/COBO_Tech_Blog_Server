@@ -1,5 +1,6 @@
 package cobo.blog.global.Data.Entity;
 
+import cobo.blog.global.Data.Enum.PositionEnum;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String img;
+    private String imgUrl;
 
     private String name;
 
@@ -24,9 +25,12 @@ public class UserEntity {
 
     private String description;
 
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private PositionEnum position;
 
     @OneToMany(mappedBy = "user")
     private List<ProjectUserMappingEntity> projectUserMappings;
 
+    @OneToMany(mappedBy = "user")
+    private List<TechPostEntity> techPosts;
 }
