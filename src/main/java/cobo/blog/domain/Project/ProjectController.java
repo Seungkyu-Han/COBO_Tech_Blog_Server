@@ -1,6 +1,7 @@
 package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.ProjectCardRes;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/project")
+@Api(tags = {"04. Project 화면에 사용하는 API"})
 public class ProjectController {
 
     private final ProjectServiceImpl projectService;

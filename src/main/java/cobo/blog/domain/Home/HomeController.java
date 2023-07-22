@@ -2,6 +2,7 @@ package cobo.blog.domain.Home;
 
 import cobo.blog.domain.Home.Data.Dto.ProjectRes;
 import cobo.blog.domain.Home.Data.Dto.TechPostRes;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/home")
 @AllArgsConstructor
+@Api(tags = {"01. Home 화면에 사용하는 API"})
 public class HomeController {
 
     private final HomeServiceImpl homeService;
@@ -21,7 +23,7 @@ public class HomeController {
     @GetMapping("/project")
     @ApiOperation(
             value = "Home 화면에서 Project 정보들을 가져오는 API",
-            notes = "몇개 씩 가져올 지 협의 필요하다고 생각"
+            notes = "현재 6개의 Project 넘김"
     )
     public ResponseEntity<List<ProjectRes>> getProjects(){
         return homeService.getProjects();
@@ -30,7 +32,7 @@ public class HomeController {
     @GetMapping("/tech-post")
     @ApiOperation(
             value = "Home 화면에서 Tech post 정보들을 가져오는 API",
-            notes = "몇개 씩 가져올 지 협의 필요하다고 생각"
+            notes = "현재 8개의 Tech-Post info 넘김"
     )
     public ResponseEntity<List<TechPostRes>> getTechPosts(){return homeService.getTechPosts();}
 }
