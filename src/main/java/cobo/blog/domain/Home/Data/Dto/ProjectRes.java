@@ -2,7 +2,6 @@ package cobo.blog.domain.Home.Data.Dto;
 
 import cobo.blog.global.Data.Entity.ProjectEntity;
 import cobo.blog.global.Data.Entity.ProjectSkillTagMappingEntity;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,13 +11,22 @@ import java.util.List;
 @Data
 public class ProjectRes {
 
-    @ApiModelProperty(example = "프로젝트의 소개 사진 url")
+    @ApiModelProperty(
+            value = "프로젝트의 소개 이미지 url",
+            example = "https://avatars.githubusercontent.com/u/98071131?s=400&u=9107a0b50b52da5bbc8528157eed1cca34feb3c5&v=4"
+    )
     private String imgUrl;
 
-    @ApiModelProperty(example = "프로젝트의 타이틀")
+    @ApiModelProperty(
+            value = "프로젝트의 타이틀",
+            example = "블로그 개발 프로젝트"
+    )
     private String title;
 
-    @ApiModelProperty(example = "프로필에 사용된 스킬들")
+    @ApiModelProperty(
+            value = "프로필에 사용된 스킬들을 문자열",
+            example = "SpringBoot"
+    )
     private List<String> skillTag;
 
     public ProjectRes(ProjectEntity project) {
