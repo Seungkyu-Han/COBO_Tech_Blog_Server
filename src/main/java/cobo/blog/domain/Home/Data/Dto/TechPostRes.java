@@ -7,12 +7,21 @@ import lombok.Data;
 @Data
 public class TechPostRes {
 
-    @ApiModelProperty(example = "TechPost 제목")
+    @ApiModelProperty(
+            value = "TechPost 제목",
+            example = "한승규의 스프링 고민"
+    )
     private String title;
-    @ApiModelProperty(example = "작성한 사람의 이름")
+    @ApiModelProperty(
+            value = "작성한 사람의 이름",
+            example = "한승규"
+    )
     private String user;
 
-    @ApiModelProperty(example = "작성한 날짜를 yyyyMMdd 8자리 문자열로 응답")
+    @ApiModelProperty(
+            value = "작성한 날짜를 yyyyMMdd 8자리 문자열로 응답",
+            example = "20230711"
+    )
     private String Date;
 
     public TechPostRes(TechPostEntity techPost) {
