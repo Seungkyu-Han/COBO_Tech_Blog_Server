@@ -25,8 +25,7 @@ public class AboutController {
     @ApiOperation(
             value = "현재 멤버의 정보를 가져오는 API",
             notes = "그냥 모든 멤버를 다 가져옴",
-            response = MemberRes.class,
-            produces = "application/json"
+            response = MemberRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")

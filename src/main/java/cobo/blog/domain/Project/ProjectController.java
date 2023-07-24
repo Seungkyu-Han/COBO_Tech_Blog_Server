@@ -26,8 +26,7 @@ public class ProjectController {
     @ApiOperation(
             value = "Project card 내용을 가져오는 API",
             notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
-            response = TechPostRes.class,
-            produces = "application/json"
+            response = TechPostRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
