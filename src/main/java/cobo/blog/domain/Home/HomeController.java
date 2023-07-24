@@ -26,8 +26,7 @@ public class HomeController {
     @ApiOperation(
             value = "Home 화면에서 Project 정보들을 가져오는 API",
             notes = "현재 6개의 Project 넘김",
-            response = ProjectRes.class,
-            produces = "application/json"
+            response = ProjectRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
@@ -40,8 +39,7 @@ public class HomeController {
     @ApiOperation(
             value = "Home 화면에서 Tech post 정보들을 가져오는 API",
             notes = "현재 8개의 Tech-Post info 넘김",
-            response = TechPostRes.class,
-            produces = "application/json"
+            response = TechPostRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
