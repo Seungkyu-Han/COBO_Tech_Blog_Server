@@ -1,6 +1,6 @@
 package cobo.blog.domain.About;
 
-import cobo.blog.domain.About.Data.Dto.MemberRes;
+import cobo.blog.domain.About.Data.Dto.AboutMemberRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -25,12 +25,12 @@ public class AboutController {
     @ApiOperation(
             value = "현재 멤버의 정보를 가져오는 API",
             notes = "그냥 모든 멤버를 다 가져옴",
-            response = MemberRes.class
+            response = AboutMemberRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<MemberRes>> getMembers(){
+    public ResponseEntity<List<AboutMemberRes>> getMembers(){
         return aboutService.getMembers();
     }
 }

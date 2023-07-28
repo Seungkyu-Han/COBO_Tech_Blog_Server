@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class TechPostRes {
+public class TechTechPostRes {
 
-    private UserInTechPostRes user;
+    private UserInTechTechPostRes user;
     @ApiModelProperty(
             value = "TechPost ID(TechPost 불러오기에 사용하기 위함)",
             example = "1"
@@ -39,8 +39,8 @@ public class TechPostRes {
     )
     private String content;
 
-    public TechPostRes(TechPostEntity techPostEntity) {
-        this.user = new UserInTechPostRes(techPostEntity.getUser());
+    public TechTechPostRes(TechPostEntity techPostEntity) {
+        this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.id = techPostEntity.getId();
         this.title = techPostEntity.getTitle();
         this.createdAt = DateConversion.DateToString(techPostEntity.getCreatedAt());

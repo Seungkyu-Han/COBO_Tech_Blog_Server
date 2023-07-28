@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class UserInTechPostRes {
+public class UserInTechTechPostRes {
 
     @ApiModelProperty(
             value = "작성한 유저의 이름",
@@ -18,7 +18,7 @@ public class UserInTechPostRes {
     )
     private String description;
 
-    public UserInTechPostRes(UserEntity userEntity){
+    public UserInTechTechPostRes(UserEntity userEntity){
         this.name = userEntity.getName();
         this.description = userEntity.getDescription();
     }

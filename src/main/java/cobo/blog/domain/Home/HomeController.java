@@ -1,7 +1,7 @@
 package cobo.blog.domain.Home;
 
-import cobo.blog.domain.Home.Data.Dto.ProjectRes;
-import cobo.blog.domain.Home.Data.Dto.TechPostRes;
+import cobo.blog.domain.Home.Data.Dto.HomeProjectRes;
+import cobo.blog.domain.Home.Data.Dto.HomeTechPostRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -26,12 +26,12 @@ public class HomeController {
     @ApiOperation(
             value = "Home 화면에서 Project 정보들을 가져오는 API",
             notes = "현재 6개의 Project 넘김",
-            response = ProjectRes.class
+            response = HomeProjectRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<ProjectRes>> getProjects(){
+    public ResponseEntity<List<HomeProjectRes>> getProjects(){
         return homeService.getProjects();
     }
 
@@ -39,10 +39,10 @@ public class HomeController {
     @ApiOperation(
             value = "Home 화면에서 Tech post 정보들을 가져오는 API",
             notes = "현재 8개의 Tech-Post info 넘김",
-            response = TechPostRes.class
+            response = HomeTechPostRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<TechPostRes>> getTechPosts(){return homeService.getTechPosts();}
+    public ResponseEntity<List<HomeTechPostRes>> getTechPosts(){return homeService.getTechPosts();}
 }

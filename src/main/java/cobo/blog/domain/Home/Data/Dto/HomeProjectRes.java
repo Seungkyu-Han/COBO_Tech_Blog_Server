@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ProjectRes {
+public class HomeProjectRes {
 
     @ApiModelProperty(
             value = "프로젝트의 소개 이미지 url",
@@ -25,11 +25,12 @@ public class ProjectRes {
 
     @ApiModelProperty(
             value = "프로필에 사용된 스킬들을 문자열",
-            example = "SpringBoot"
+            dataType = "List",
+            example = "[\"SpringBoot\", \"JavaScript\", \"MySQL\"]"
     )
     private List<String> skillTag;
 
-    public ProjectRes(ProjectEntity project) {
+    public HomeProjectRes(ProjectEntity project) {
         this.imgUrl = project.getImgUrl();
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();
