@@ -25,7 +25,8 @@ public class HomeProjectRes {
 
     @ApiModelProperty(
             value = "프로필에 사용된 스킬들을 문자열",
-            example = "SpringBoot"
+            dataType = "List",
+            example = "[\"SpringBoot\", \"JavaScript\", \"MySQL\"]"
     )
     private List<String> skillTag;
 
