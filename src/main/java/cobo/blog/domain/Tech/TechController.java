@@ -1,6 +1,6 @@
 package cobo.blog.domain.Tech;
 
-import cobo.blog.domain.Tech.Data.Dto.TechPostRes;
+import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class TechController {
     @ApiOperation(
             value = "Tech Post 의 정보를 List 응답",
             notes = "페이지 1부터 시작합니다, 주의 부탁드립니다.",
-            response = TechPostRes.class
+            response = TechTechPostRes.class
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1", required = true),
@@ -32,7 +32,7 @@ public class TechController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<TechPostRes>> getPosts(
+    public ResponseEntity<List<TechTechPostRes>> getPosts(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size){
         return techService.getPosts(page, size);

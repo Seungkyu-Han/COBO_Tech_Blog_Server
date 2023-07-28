@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ProjectRes {
+public class HomeProjectRes {
 
     @ApiModelProperty(
             value = "프로젝트의 소개 이미지 url",
@@ -29,7 +29,7 @@ public class ProjectRes {
     )
     private List<String> skillTag;
 
-    public ProjectRes(ProjectEntity project) {
+    public HomeProjectRes(ProjectEntity project) {
         this.imgUrl = project.getImgUrl();
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();

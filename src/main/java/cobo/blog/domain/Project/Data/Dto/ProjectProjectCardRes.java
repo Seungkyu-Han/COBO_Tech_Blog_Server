@@ -1,6 +1,6 @@
 package cobo.blog.domain.Project.Data.Dto;
 
-import cobo.blog.domain.Tech.Data.Dto.UserInTechPostRes;
+import cobo.blog.domain.Tech.Data.Dto.UserInTechTechPostRes;
 import cobo.blog.global.Data.Entity.*;
 import cobo.blog.global.Util.DateConversion;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ProjectCardRes {
+public class ProjectProjectCardRes {
 
     @ApiModelProperty(
             value = "프로젝트 이미지 url",
@@ -22,7 +22,7 @@ public class ProjectCardRes {
             example = "블로그 제작 프로젝트"
     )
     private String title;
-    private List<UserInTechPostRes> users;
+    private List<UserInTechTechPostRes> users;
     @ApiModelProperty(
             value = "프로젝트 날짜를 문자열로 표현",
             example = "20230711"
@@ -39,7 +39,7 @@ public class ProjectCardRes {
     )
     private String content;
 
-    public ProjectCardRes(ProjectEntity projectEntity) {
+    public ProjectProjectCardRes(ProjectEntity projectEntity) {
         this.imgUrl = projectEntity.getImgUrl();
         this.title = projectEntity.getTitle();
         this.createdAt = DateConversion.DateToString(projectEntity.getCreatedAt());
@@ -47,7 +47,7 @@ public class ProjectCardRes {
         this.users = new ArrayList<>();
         this.skillTags = new ArrayList<>();
         for(ProjectUserMappingEntity projectUserMappingEntity : projectEntity.getProjectUserMappings())
-            this.users.add(new UserInTechPostRes(projectUserMappingEntity.getUser()));
+            this.users.add(new UserInTechTechPostRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
             this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
     }

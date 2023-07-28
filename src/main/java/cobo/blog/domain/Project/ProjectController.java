@@ -1,7 +1,7 @@
 package cobo.blog.domain.Project;
 
-import cobo.blog.domain.Project.Data.Dto.ProjectCardRes;
-import cobo.blog.domain.Tech.Data.Dto.TechPostRes;
+import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
+import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -26,12 +26,12 @@ public class ProjectController {
     @ApiOperation(
             value = "Project card 내용을 가져오는 API",
             notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
-            response = TechPostRes.class
+            response = TechTechPostRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<ProjectCardRes>> getProjectCards(){
+    public ResponseEntity<List<ProjectProjectCardRes>> getProjectCards(){
         return projectService.getProjectCards();
     }
 }

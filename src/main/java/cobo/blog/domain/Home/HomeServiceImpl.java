@@ -1,9 +1,8 @@
 package cobo.blog.domain.Home;
 
-import cobo.blog.domain.Home.Data.Dto.ProjectRes;
-import cobo.blog.domain.Home.Data.Dto.TechPostRes;
+import cobo.blog.domain.Home.Data.Dto.HomeProjectRes;
+import cobo.blog.domain.Home.Data.Dto.HomeTechPostRes;
 import cobo.blog.global.Data.Entity.ProjectEntity;
-import cobo.blog.global.Data.Entity.ProjectSkillTagMappingEntity;
 import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Repository.ProjectRepository;
 import cobo.blog.global.Repository.TechPostRepository;
@@ -24,17 +23,17 @@ public class HomeServiceImpl {
     private final ProjectRepository projectRepository;
     private final TechPostRepository techPostRepository;
 
-    public ResponseEntity<List<ProjectRes>> getProjects() {
-        List<ProjectRes> projectRes = new ArrayList<>();
+    public ResponseEntity<List<HomeProjectRes>> getProjects() {
+        List<HomeProjectRes> homeProjectRes = new ArrayList<>();
         for(ProjectEntity project : projectRepository.findTop6ByOrderByCreatedAtDesc())
-            projectRes.add(new ProjectRes(project));
-        return new ResponseEntity<>(projectRes, HttpStatus.OK);
+            homeProjectRes.add(new HomeProjectRes(project));
+        return new ResponseEntity<>(homeProjectRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<TechPostRes>> getTechPosts() {
-        List<TechPostRes> techPostRes = new ArrayList<>();
+    public ResponseEntity<List<HomeTechPostRes>> getTechPosts() {
+        List<HomeTechPostRes> homeTechPostRes = new ArrayList<>();
         for(TechPostEntity techPostEntity : techPostRepository.findTop8ByOrderByCreatedAtDesc())
-            techPostRes.add(new TechPostRes(techPostEntity));
-        return new ResponseEntity<>(techPostRes, HttpStatus.OK);
+            homeTechPostRes.add(new HomeTechPostRes(techPostEntity));
+        return new ResponseEntity<>(homeTechPostRes, HttpStatus.OK);
     }
 }

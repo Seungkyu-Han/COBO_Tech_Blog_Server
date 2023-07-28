@@ -1,6 +1,6 @@
 package cobo.blog.domain.About;
 
-import cobo.blog.domain.About.Data.Dto.MemberRes;
+import cobo.blog.domain.About.Data.Dto.AboutMemberRes;
 import cobo.blog.global.Data.Entity.UserEntity;
 import cobo.blog.global.Repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -17,10 +17,10 @@ public class AboutServiceImpl {
 
     private final UserRepository userRepository;
 
-    public ResponseEntity<List<MemberRes>> getMembers() {
-        List<MemberRes> memberRes = new ArrayList<>();
+    public ResponseEntity<List<AboutMemberRes>> getMembers() {
+        List<AboutMemberRes> aboutMemberRes = new ArrayList<>();
         for(UserEntity userEntity : userRepository.findAll())
-            memberRes.add(new MemberRes(userEntity));
-        return new ResponseEntity<>(memberRes, HttpStatus.OK);
+            aboutMemberRes.add(new AboutMemberRes(userEntity));
+        return new ResponseEntity<>(aboutMemberRes, HttpStatus.OK);
     }
 }

@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class UserInProjectCardRes {
+public class UserInProjectProjectCardRes {
 
     @ApiModelProperty(
             value = "프로젝트에 참여한 사람의 이름",

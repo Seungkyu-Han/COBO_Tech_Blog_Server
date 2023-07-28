@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class MemberRes {
+public class AboutMemberRes {
 
     @ApiModelProperty(
             value = "유저의 깃허브 프로필 사진 url",
@@ -44,7 +44,7 @@ public class MemberRes {
     )
     private PositionEnum position;
 
-    public MemberRes(UserEntity userEntity) {
+    public AboutMemberRes(UserEntity userEntity) {
         this.imgUrl = userEntity.getImgUrl();
         this.name = userEntity.getName();
         this.email = userEntity.getEmail();

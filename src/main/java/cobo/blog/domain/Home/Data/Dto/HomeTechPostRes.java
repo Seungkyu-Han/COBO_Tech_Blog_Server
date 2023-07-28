@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class TechPostRes {
+public class HomeTechPostRes {
 
     @ApiModelProperty(
             value = "TechPost 제목",
@@ -24,7 +24,7 @@ public class TechPostRes {
     )
     private String Date;
 
-    public TechPostRes(TechPostEntity techPost) {
+    public HomeTechPostRes(TechPostEntity techPost) {
         this.title = techPost.getTitle();
         this.user = techPost.getUser().getName();
         this.Date = techPost.getCreatedAt().toString();
