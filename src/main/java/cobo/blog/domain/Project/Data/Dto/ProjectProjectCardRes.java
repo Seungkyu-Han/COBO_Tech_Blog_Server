@@ -1,6 +1,5 @@
 package cobo.blog.domain.Project.Data.Dto;
 
-import cobo.blog.domain.Tech.Data.Dto.UserInTechTechPostRes;
 import cobo.blog.global.Data.Entity.*;
 import cobo.blog.global.Util.DateConversion;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,7 +21,7 @@ public class ProjectProjectCardRes {
             example = "블로그 제작 프로젝트"
     )
     private String title;
-    private List<UserInTechTechPostRes> users;
+    private List<UserInProjectProjectCardRes> users;
     @ApiModelProperty(
             value = "프로젝트 날짜를 문자열로 표현",
             example = "20230711"
@@ -53,7 +52,7 @@ public class ProjectProjectCardRes {
         this.users = new ArrayList<>();
         this.skillTags = new ArrayList<>();
         for(ProjectUserMappingEntity projectUserMappingEntity : projectEntity.getProjectUserMappings())
-            this.users.add(new UserInTechTechPostRes(projectUserMappingEntity.getUser()));
+            this.users.add(new UserInProjectProjectCardRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
             this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
         this.url = projectEntity.getUrl();

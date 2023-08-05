@@ -1,5 +1,6 @@
 package cobo.blog.domain.Project.Data.Dto;
 
+import cobo.blog.global.Data.Entity.UserEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,4 +18,9 @@ public class UserInProjectProjectCardRes {
             example = "한승규 포뇨 이미지 url"
     )
     private String imgUrl;
+
+    public UserInProjectProjectCardRes(UserEntity userEntity){
+        this.name = userEntity.getName();
+        this.imgUrl = userEntity.getImgUrl();
+    }
 }
