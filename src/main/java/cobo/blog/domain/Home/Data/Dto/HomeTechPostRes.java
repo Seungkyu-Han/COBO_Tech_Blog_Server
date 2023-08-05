@@ -24,9 +24,16 @@ public class HomeTechPostRes {
     )
     private String Date;
 
+    @ApiModelProperty(
+            value = "해당 TechPost의 url",
+            example = "https://seungkyu-han.tistory.com/"
+    )
+    private String url;
+
     public HomeTechPostRes(TechPostEntity techPost) {
         this.title = techPost.getTitle();
         this.user = techPost.getUser().getName();
         this.Date = techPost.getCreatedAt().toString();
+        this.url = techPost.getUrl();
     }
 }
