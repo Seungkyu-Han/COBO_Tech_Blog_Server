@@ -27,7 +27,7 @@ public class ProjectEntity {
 
     private String url;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "project")
     private List<ProjectUserMappingEntity> projectUserMappings;
 
     @OneToMany(mappedBy = "project")
