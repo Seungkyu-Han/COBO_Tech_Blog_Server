@@ -25,14 +25,14 @@ public class HomeServiceImpl {
 
     public ResponseEntity<List<HomeProjectRes>> getProjects() {
         List<HomeProjectRes> homeProjectRes = new ArrayList<>();
-        for(ProjectEntity project : projectRepository.findTop6ByOrderByCreatedAtDesc())
+        for(ProjectEntity project : projectRepository.findTop6ByOrderByIdDesc())
             homeProjectRes.add(new HomeProjectRes(project));
         return new ResponseEntity<>(homeProjectRes, HttpStatus.OK);
     }
 
     public ResponseEntity<List<HomeTechPostRes>> getTechPosts() {
         List<HomeTechPostRes> homeTechPostRes = new ArrayList<>();
-        for(TechPostEntity techPostEntity : techPostRepository.findTop8ByOrderByCreatedAtDesc())
+        for(TechPostEntity techPostEntity : techPostRepository.findTop8ByOrderByIdDesc())
             homeTechPostRes.add(new HomeTechPostRes(techPostEntity));
         return new ResponseEntity<>(homeTechPostRes, HttpStatus.OK);
     }
