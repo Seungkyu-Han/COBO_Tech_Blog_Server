@@ -30,11 +30,18 @@ public class HomeProjectRes {
     )
     private List<String> skillTag;
 
+    @ApiModelProperty(
+            value = "해당 project의 url",
+            example = "https://seungkyu-han.tistory.com/"
+    )
+    private String url;
+
     public HomeProjectRes(ProjectEntity project) {
         this.imgUrl = project.getImgUrl();
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : project.getProjectSkillTagMappings())
             skillTag.add(projectSkillTagMappingEntity.getSkillTag().getName());
+        this.url = project.getUrl();
     }
 }

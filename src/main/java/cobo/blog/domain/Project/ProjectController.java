@@ -2,14 +2,12 @@ package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
 import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,10 +26,16 @@ public class ProjectController {
             notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
             response = TechTechPostRes.class
     )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1", required = true),
+            @ApiImplicitParam(name = "size", value = "페이지의 사이즈", example = "6", required = true)
+    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<List<ProjectProjectCardRes>> getProjectCards(){
-        return projectService.getProjectCards();
+    public ResponseEntity<List<ProjectProjectCardRes>> getProjectCards(
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size){
+        return projectService.getProjectCards(page, size);
     }
 }

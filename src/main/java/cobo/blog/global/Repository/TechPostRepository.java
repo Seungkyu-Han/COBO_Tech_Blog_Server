@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface TechPostRepository extends JpaRepository<TechPostEntity, Integer> {
 
-    List<TechPostEntity> findTop8ByOrderByCreatedAtDesc();
+    List<TechPostEntity> findTop8ByOrderByIdDesc();
 
 }

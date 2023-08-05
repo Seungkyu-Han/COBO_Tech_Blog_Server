@@ -39,6 +39,12 @@ public class TechTechPostRes {
     )
     private String content;
 
+    @ApiModelProperty(
+            value = "해당 TechPost의 url",
+            example = "https://seungkyu-han.tistory.com/"
+    )
+    private String url;
+
     public TechTechPostRes(TechPostEntity techPostEntity) {
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.id = techPostEntity.getId();
@@ -48,5 +54,6 @@ public class TechTechPostRes {
         this.skillTag = new ArrayList<>();
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
             this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
+        this.url = techPostEntity.getUrl();
     }
 }
