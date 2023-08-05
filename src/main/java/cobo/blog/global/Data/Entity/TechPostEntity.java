@@ -23,6 +23,8 @@ public class TechPostEntity {
 
     private String content;
 
+    private String url;
+
     @ManyToOne
     @JoinColumn(name = "user")
     private UserEntity user;
