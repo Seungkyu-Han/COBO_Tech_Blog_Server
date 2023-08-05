@@ -39,6 +39,12 @@ public class ProjectProjectCardRes {
     )
     private String content;
 
+    @ApiModelProperty(
+            value = "해당 project의 url",
+            example = "https://seungkyu-han.tistory.com/"
+    )
+    private String url;
+
     public ProjectProjectCardRes(ProjectEntity projectEntity) {
         this.imgUrl = projectEntity.getImgUrl();
         this.title = projectEntity.getTitle();
@@ -50,5 +56,6 @@ public class ProjectProjectCardRes {
             this.users.add(new UserInTechTechPostRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
             this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
+        this.url = projectEntity.getUrl();
     }
 }
