@@ -23,7 +23,7 @@ public class ProjectEntity {
     @CreatedDate
     private Date createdAt;
 
-    private String content;
+    private String description;
 
     private String url;
 
