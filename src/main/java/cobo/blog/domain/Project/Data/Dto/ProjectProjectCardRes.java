@@ -36,7 +36,7 @@ public class ProjectProjectCardRes {
             value = "간단한 소개",
             example = "이 프로젝트는 블로그를 제작한 프로젝트입니다."
     )
-    private String content;
+    private String description;
 
     @ApiModelProperty(
             value = "해당 project의 url",
@@ -48,7 +48,7 @@ public class ProjectProjectCardRes {
         this.imgUrl = projectEntity.getImgUrl();
         this.title = projectEntity.getTitle();
         this.createdAt = DateConversion.DateToString(projectEntity.getCreatedAt());
-        this.content = projectEntity.getContent();
+        this.description = projectEntity.getDescription();
         this.users = new ArrayList<>();
         this.skillTags = new ArrayList<>();
         for(ProjectUserMappingEntity projectUserMappingEntity : projectEntity.getProjectUserMappings())
