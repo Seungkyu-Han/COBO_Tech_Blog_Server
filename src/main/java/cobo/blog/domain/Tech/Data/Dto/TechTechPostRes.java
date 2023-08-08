@@ -40,6 +40,12 @@ public class TechTechPostRes {
     private String content;
 
     @ApiModelProperty(
+            value = "해당 포스트의 조회 수",
+            example = "123"
+    )
+    private Long viewCount;
+
+    @ApiModelProperty(
             value = "해당 TechPost의 url",
             example = "https://seungkyu-han.tistory.com/"
     )
@@ -55,5 +61,6 @@ public class TechTechPostRes {
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
             this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
         this.url = techPostEntity.getUrl();
+        this.viewCount = techPostEntity.getViewCount();
     }
 }

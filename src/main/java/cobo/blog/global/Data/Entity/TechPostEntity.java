@@ -25,6 +25,8 @@ public class TechPostEntity {
 
     private String url;
 
+    private Long viewCount;
+
     @ManyToOne
     @JoinColumn(name = "user")
     private UserEntity user;
