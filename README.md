@@ -1,1 +1,1 @@
-# CoBo_Blog_Back-end
+# COBO_Tech_Blog_Server
