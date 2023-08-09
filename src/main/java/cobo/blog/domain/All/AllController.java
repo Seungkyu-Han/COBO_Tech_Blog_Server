@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -36,7 +37,8 @@ public class AllController {
     })
     public ResponseEntity<AllHitRes> hit(
             @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
+            HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse){
-        return allService.getHit(hitCookie, httpServletResponse);
+        return allService.getHit(hitCookie, httpServletRequest, httpServletResponse);
     }
 }
