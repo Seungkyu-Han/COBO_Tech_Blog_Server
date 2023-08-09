@@ -8,10 +8,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -31,7 +34,9 @@ public class AllController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<AllHitRes> Test(){
-        return allService.getHit();
+    public ResponseEntity<AllHitRes> hit(
+            @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
+            HttpServletResponse httpServletResponse){
+        return allService.getHit(hitCookie, httpServletResponse);
     }
 }

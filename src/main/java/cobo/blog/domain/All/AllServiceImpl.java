@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 @Service
@@ -18,12 +20,19 @@ public class AllServiceImpl {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public ResponseEntity<AllHitRes> getHit(){
+    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
-        redisTemplate.opsForValue().increment("today");
+        if(hitCookie == 0){
+            redisTemplate.opsForValue().increment("today");
+
+            Cookie cookie = new Cookie("hitCookie", "1");
+            cookie.setMaxAge(900);
+            httpServletResponse.addCookie(cookie);
+        }
+
 
         return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
     }
