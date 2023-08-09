@@ -24,10 +24,11 @@ public class AllServiceImpl {
     @Transactional
     public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
-        Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
-        Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
         if(hitCookie == 0) IncrementTodayAndSetCookie(httpServletRequest, httpServletResponse);
+
+        Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
+        Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
         return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
     }
