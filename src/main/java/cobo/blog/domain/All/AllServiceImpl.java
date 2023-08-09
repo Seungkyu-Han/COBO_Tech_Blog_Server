@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.AllHitRes;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,15 +26,16 @@ public class AllServiceImpl {
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
-        if(hitCookie == 0){
-            redisTemplate.opsForValue().increment("today");
-
-            Cookie cookie = new Cookie("hitCookie", "1");
-            cookie.setMaxAge(900);
-            httpServletResponse.addCookie(cookie);
-        }
-
+        if(hitCookie == 0) IncrementTodayAndSetCookie(httpServletResponse);
 
         return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
+    }
+
+    private void IncrementTodayAndSetCookie(HttpServletResponse httpServletResponse){
+        redisTemplate.opsForValue().increment("today");
+
+        Cookie cookie = new Cookie("hitCookie", "1");
+        cookie.setMaxAge(900);
+        httpServletResponse.addCookie(cookie);
     }
 }
