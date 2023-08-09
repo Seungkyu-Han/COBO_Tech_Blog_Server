@@ -32,4 +32,9 @@ public class ProjectServiceImpl {
                 page - 1, size, Sort.by(Sort.Direction.DESC, "id")
                 ));
     }
+
+
+    public ResponseEntity<Long> getProjectCount() {
+        return new ResponseEntity<>(projectRepository.count(), HttpStatus.OK);
+    }
 }
