@@ -37,4 +37,17 @@ public class TechController {
             @RequestParam("size") Integer size){
         return techService.getPosts(page, size);
     }
+
+    @GetMapping("/count")
+    @ApiOperation(
+            value = "tech의 개수를 가져오는 API",
+            notes = "이건 그냥 숫자로 바로 때리겠습니다.",
+            response = Integer.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<Long> getProjectCount(){
+        return techService.getTechCount();
+    }
 }

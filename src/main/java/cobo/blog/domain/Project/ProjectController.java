@@ -38,4 +38,17 @@ public class ProjectController {
             @RequestParam("size") Integer size){
         return projectService.getProjectCards(page, size);
     }
+
+    @GetMapping("/count")
+    @ApiOperation(
+            value = "Project의 개수를 가져오는 API",
+            notes = "이건 그냥 숫자로 바로 때리겠습니다.",
+            response = Integer.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<Long> getProjectCount(){
+        return projectService.getProjectCount();
+    }
 }

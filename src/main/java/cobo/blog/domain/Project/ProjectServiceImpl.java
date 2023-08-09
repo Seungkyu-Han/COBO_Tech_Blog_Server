@@ -26,10 +26,12 @@ public class ProjectServiceImpl {
             projectProjectCardRes.add(new ProjectProjectCardRes(projectEntity));
         return new ResponseEntity<>(projectProjectCardRes, HttpStatus.OK);
     }
-
-    public Page<ProjectEntity> getProjectEntityWithPaging(int page, int size){
+    private Page<ProjectEntity> getProjectEntityWithPaging(int page, int size){
         return projectRepository.findAll(PageRequest.of(
                 page - 1, size, Sort.by(Sort.Direction.DESC, "id")
                 ));
+    }
+    public ResponseEntity<Long> getProjectCount() {
+        return new ResponseEntity<>(projectRepository.count(), HttpStatus.OK);
     }
 }
