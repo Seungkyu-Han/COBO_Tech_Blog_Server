@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ public class RedisToDbScheduler {
     private HitRepository hitRepository;
 
     @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
     public void saveHitToDB(){
 
         log.info("조회수 반영");

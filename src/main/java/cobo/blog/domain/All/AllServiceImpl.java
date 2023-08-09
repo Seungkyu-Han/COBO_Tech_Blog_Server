@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class AllServiceImpl {
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Transactional
     public ResponseEntity<AllHitRes> getHit(){
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
