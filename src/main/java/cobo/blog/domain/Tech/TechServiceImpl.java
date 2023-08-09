@@ -27,9 +27,12 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
-    public Page<TechPostEntity> getTechPostEntitiesWithPaging(int page, int size){
+    private Page<TechPostEntity> getTechPostEntitiesWithPaging(int page, int size){
         return techPostRepository.findAll(PageRequest.of(
                 page - 1, size, Sort.by(Sort.Direction.DESC, "id")
                 ));
+    }
+    public ResponseEntity<Long> getTechCount() {
+        return new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK);
     }
 }
