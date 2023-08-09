@@ -36,6 +36,9 @@ dependencies {
 	//DB
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
