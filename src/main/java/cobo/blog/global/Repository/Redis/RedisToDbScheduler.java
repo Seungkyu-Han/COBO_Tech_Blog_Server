@@ -24,8 +24,6 @@ public class RedisToDbScheduler {
     @Transactional
     public void saveHitToDB(){
 
-        log.info("조회수 반영");
-
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
