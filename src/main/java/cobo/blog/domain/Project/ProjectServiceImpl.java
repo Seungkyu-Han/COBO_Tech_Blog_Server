@@ -27,7 +27,7 @@ public class ProjectServiceImpl {
         return new ResponseEntity<>(projectProjectCardRes, HttpStatus.OK);
     }
 
-    public Page<ProjectEntity> getProjectEntityWithPaging(int page, int size){
+    private Page<ProjectEntity> getProjectEntityWithPaging(int page, int size){
         return projectRepository.findAll(PageRequest.of(
                 page - 1, size, Sort.by(Sort.Direction.DESC, "id")
                 ));
