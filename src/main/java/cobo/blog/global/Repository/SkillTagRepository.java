@@ -9,8 +9,4 @@ import java.util.List;
 
 @Repository
 public interface SkillTagRepository extends JpaRepository<SkillTagEntity, Integer> {
-    @Query(
-            "SELECT e.name FROM SkillTagEntity e"
-    )
-    List<String> getNameOfSkillTags();
 }
