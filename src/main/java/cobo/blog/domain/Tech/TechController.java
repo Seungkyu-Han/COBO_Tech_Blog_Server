@@ -1,5 +1,6 @@
 package cobo.blog.domain.Tech;
 
+import cobo.blog.domain.Tech.Data.Dto.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -55,15 +56,26 @@ public class TechController {
     @ApiOperation(
             value = "skillTag들을 가져오는 API",
             notes = "그냥 문자열 리스트로 뿌립니다.",
-            response = String.class
+            response = TechSkillTagRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    @ApiModelProperty(
-            value = "스킬 태그들의 문자열 리스",
-            dataType = "List",
-            example = "[\"SpringBoot\", \"JavaScript\", \"MySQL\"]"
+    public ResponseEntity<List<TechSkillTagRes>> getSkillTags(){return techService.getSkillTags();}
+
+    @GetMapping("/posts-skilltag")
+    @ApiOperation(
+            value = "SkillTag id에 맞는 techPost를 불러오는 API",
+            notes = "화이팅!",
+            response = TechTechPostRes.class
     )
-    public ResponseEntity<List<String>> getSkillTags(){return techService.getSkillTags();}
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size,
+            @RequestParam("skillTag") Integer skillTag){
+        return techService.getPostsBySkillTag(page, size, skillTag);
+    }
 }
