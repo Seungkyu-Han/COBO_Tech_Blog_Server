@@ -25,8 +25,6 @@ public class TechPostEntity {
 
     private String url;
 
-    private String imgUrl;
-
     private Long viewCount;
 
     @ManyToOne

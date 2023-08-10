@@ -18,8 +18,15 @@ public class UserInTechTechPostRes {
     )
     private String description;
 
+    @ApiModelProperty(
+            value = "작성한 유저의 이미지 url",
+            example = "https://avatars.githubusercontent.com/u/98071131?s=400&u=9107a0b50b52da5bbc8528157eed1cca34feb3c5&v=4"
+    )
+    private String imgUrl;
+
     public UserInTechTechPostRes(UserEntity userEntity){
         this.name = userEntity.getName();
         this.description = userEntity.getDescription();
+        this.imgUrl = userEntity.getImgUrl();
     }
 }

@@ -50,4 +50,20 @@ public class TechController {
     public ResponseEntity<Long> getProjectCount(){
         return techService.getTechCount();
     }
+
+    @GetMapping("/skillTags")
+    @ApiOperation(
+            value = "skillTag들을 가져오는 API",
+            notes = "그냥 문자열 리스트로 뿌립니다.",
+            response = String.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    @ApiModelProperty(
+            value = "스킬 태그들의 문자열 리스",
+            dataType = "List",
+            example = "[\"SpringBoot\", \"JavaScript\", \"MySQL\"]"
+    )
+    public ResponseEntity<List<String>> getSkillTags(){return techService.getSkillTags();}
 }

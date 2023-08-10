@@ -1,7 +1,9 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
+import cobo.blog.global.Data.Entity.SkillTagEntity;
 import cobo.blog.global.Data.Entity.TechPostEntity;
+import cobo.blog.global.Repository.SkillTagRepository;
 import cobo.blog.global.Repository.TechPostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.util.List;
 public class TechServiceImpl {
 
     private final TechPostRepository techPostRepository;
+    private final SkillTagRepository skillTagRepository;
 
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
@@ -34,5 +37,9 @@ public class TechServiceImpl {
     }
     public ResponseEntity<Long> getTechCount() {
         return new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<String>> getSkillTags() {
+        return new ResponseEntity<>(skillTagRepository.getNameOfSkillTags(), HttpStatus.OK);
     }
 }
