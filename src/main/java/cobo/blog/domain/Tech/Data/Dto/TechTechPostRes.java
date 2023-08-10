@@ -51,8 +51,6 @@ public class TechTechPostRes {
     )
     private String url;
 
-    private String imgUrl;
-
     public TechTechPostRes(TechPostEntity techPostEntity) {
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.id = techPostEntity.getId();
@@ -64,6 +62,5 @@ public class TechTechPostRes {
             this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
         this.url = techPostEntity.getUrl();
         this.viewCount = techPostEntity.getViewCount();
-        this.imgUrl = techPostEntity.getImgUrl();
     }
 }
