@@ -37,12 +37,6 @@ public class HomeProjectRes {
     private String description;
 
     @ApiModelProperty(
-            value = "해당 project의 간단한 소개(추후 삭제 예정이니 쓰지 마세요)",
-            example = "전역하고 싶어요"
-    )
-    private String brief_content;
-
-    @ApiModelProperty(
             value = "해당 project의 url",
             example = "https://seungkyu-han.tistory.com/"
     )
@@ -53,7 +47,6 @@ public class HomeProjectRes {
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();
         this.description = project.getDescription();
-        this.brief_content = project.getDescription();
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : project.getProjectSkillTagMappings())
             skillTag.add(projectSkillTagMappingEntity.getSkillTag().getName());
         this.url = project.getUrl();

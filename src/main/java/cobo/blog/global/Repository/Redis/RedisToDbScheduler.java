@@ -27,7 +27,7 @@ public class RedisToDbScheduler {
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
-        HitEntity hitEntity = new HitEntity(today, total);
+        HitEntity hitEntity = new HitEntity(today, total + today);
 
         redisTemplate.opsForValue().set("total", String.valueOf(today + total));
         redisTemplate.opsForValue().set("today", String.valueOf(0));
