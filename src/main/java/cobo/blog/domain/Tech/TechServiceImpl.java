@@ -31,8 +31,10 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<Long> getTechCount() {
-        return new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK);
+    public ResponseEntity<Long> getTechCount(Integer skillTagId) {
+        return (skillTagId == null) ?
+                new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK):
+                new ResponseEntity<>(techPostRepository.countTechPostEntitiesBySkillTag(skillTagId), HttpStatus.OK);
     }
 
     public ResponseEntity<List<TechSkillTagRes>> getSkillTags() {
