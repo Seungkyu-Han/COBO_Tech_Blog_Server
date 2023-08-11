@@ -18,7 +18,15 @@ public interface TechPostRepository extends JpaRepository<TechPostEntity, Intege
             "SELECT tp FROM TechPostEntity tp " +
                     "INNER JOIN tp.techPostSkillTagMappings tsm " +
                     "INNER JOIN tsm.skillTag st " +
-                    "WHERE st.id = :skillTag"
+                    "WHERE st.id = :skillTagId"
     )
-    List<TechPostEntity> getTechPostEntitiesBySkillTagId(Integer skillTag, Pageable pageable);
+    List<TechPostEntity> getTechPostEntitiesBySkillTagId(Integer skillTagId, Pageable pageable);
+
+    @Query(
+            "SELECT COUNT(tp) FROM TechPostEntity tp " +
+                    "INNER JOIN tp.techPostSkillTagMappings tsm " +
+                    "INNER JOIN tsm.skillTag st " +
+                    "WHERE st.id = :skillTagId"
+    )
+    Long countTechPostEntitiesBySkillTag(Integer skillTagId);
 }

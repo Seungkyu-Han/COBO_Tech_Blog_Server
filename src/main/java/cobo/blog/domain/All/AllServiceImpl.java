@@ -36,6 +36,7 @@ public class AllServiceImpl {
 
         Cookie cookie = new Cookie("hitCookie", "1");
         cookie.setMaxAge(900);
+        cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
     }
 }

@@ -7,8 +7,6 @@ import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Repository.SkillTagRepository;
 import cobo.blog.global.Repository.TechPostRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static cobo.blog.global.Util.PageRequestUtil.pageRequestGenerator;
 
 @Service
 @AllArgsConstructor
@@ -26,13 +26,15 @@ public class TechServiceImpl {
 
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
-        for(TechPostEntity techPostEntity : techPostRepository.findAll(getPageRequest(page, size)))
+        for(TechPostEntity techPostEntity : techPostRepository.findAll(pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
             techTechPostRes.add(new TechTechPostRes(techPostEntity));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<Long> getTechCount() {
-        return new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK);
+    public ResponseEntity<Long> getTechCount(Integer skillTagId) {
+        return (skillTagId == null) ?
+                new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK):
+                new ResponseEntity<>(techPostRepository.countTechPostEntitiesBySkillTag(skillTagId), HttpStatus.OK);
     }
 
     public ResponseEntity<List<TechSkillTagRes>> getSkillTags() {
@@ -42,16 +44,11 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTag) {
+    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
-        for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(skillTag, getPageRequest(page, size)))
+        for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
+                skillTagId, pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
             techTechPostRes.add(new TechTechPostRes(techPostEntity));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
-    }
-
-    private static PageRequest getPageRequest(int page, int size) {
-        return PageRequest.of(
-                page - 1, size, Sort.by(Sort.Direction.DESC, "id")
-        );
     }
 }

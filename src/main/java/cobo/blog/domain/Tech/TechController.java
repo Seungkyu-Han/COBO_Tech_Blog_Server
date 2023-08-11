@@ -48,8 +48,10 @@ public class TechController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<Long> getProjectCount(){
-        return techService.getTechCount();
+    public ResponseEntity<Long> getProjectCount(
+            @RequestParam(name = "skillTagId", required = false) Integer skillTagId
+    ){
+        return techService.getTechCount(skillTagId);
     }
 
     @GetMapping("/skillTags")
@@ -75,7 +77,7 @@ public class TechController {
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam("skillTag") Integer skillTag){
-        return techService.getPostsBySkillTag(page, size, skillTag);
+            @RequestParam("skillTag") Integer skillTagId){
+        return techService.getPostsBySkillTag(page, size, skillTagId);
     }
 }

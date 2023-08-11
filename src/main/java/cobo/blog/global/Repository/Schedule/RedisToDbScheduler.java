@@ -1,10 +1,9 @@
-package cobo.blog.global.Repository.Redis;
+package cobo.blog.global.Repository.Schedule;
 
 import cobo.blog.global.Data.Entity.HitEntity;
 import cobo.blog.global.Repository.HitRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
