@@ -12,6 +12,12 @@ import java.util.List;
 public class ProjectProjectCardRes {
 
     @ApiModelProperty(
+            value = "프로젝트 id",
+            example = "1"
+    )
+    private Integer id;
+
+    @ApiModelProperty(
             value = "프로젝트 이미지 url",
             example = "https://avatars.githubusercontent.com/u/98071131?s=400&u=9107a0b50b52da5bbc8528157eed1cca34feb3c5&v=4"
     )
@@ -21,7 +27,7 @@ public class ProjectProjectCardRes {
             example = "블로그 제작 프로젝트"
     )
     private String title;
-    private List<UserInProjectProjectCardRes> users;
+    private List<UserInProjectRes> users;
     @ApiModelProperty(
             value = "프로젝트 날짜를 문자열로 표현",
             example = "20230711"
@@ -38,13 +44,8 @@ public class ProjectProjectCardRes {
     )
     private String description;
 
-    @ApiModelProperty(
-            value = "해당 project의 url",
-            example = "https://seungkyu-han.tistory.com/"
-    )
-    private String url;
-
     public ProjectProjectCardRes(ProjectEntity projectEntity) {
+        this.id = projectEntity.getId();
         this.imgUrl = projectEntity.getImgUrl();
         this.title = projectEntity.getTitle();
         this.createdAt = DateConversion.DateToString(projectEntity.getCreatedAt());
@@ -52,9 +53,8 @@ public class ProjectProjectCardRes {
         this.users = new ArrayList<>();
         this.skillTags = new ArrayList<>();
         for(ProjectUserMappingEntity projectUserMappingEntity : projectEntity.getProjectUserMappings())
-            this.users.add(new UserInProjectProjectCardRes(projectUserMappingEntity.getUser()));
+            this.users.add(new UserInProjectRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
             this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
-        this.url = projectEntity.getUrl();
     }
 }

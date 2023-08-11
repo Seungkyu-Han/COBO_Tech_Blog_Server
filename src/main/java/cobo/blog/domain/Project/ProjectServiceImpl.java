@@ -1,6 +1,7 @@
 package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
+import cobo.blog.domain.Project.Data.Dto.ProjectProjectRes;
 import cobo.blog.global.Data.Entity.ProjectEntity;
 import cobo.blog.global.Repository.ProjectRepository;
 import cobo.blog.global.Util.PageRequestUtil;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -30,5 +32,9 @@ public class ProjectServiceImpl {
 
     public ResponseEntity<Long> getProjectCount() {
         return new ResponseEntity<>(projectRepository.count(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<ProjectProjectRes> getProject(Integer projectId) {
+        return new ResponseEntity<>(new ProjectProjectRes(projectRepository.findByProjectId(projectId)), HttpStatus.OK);
     }
 }

@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class UserInProjectProjectCardRes {
+public class UserInProjectRes {
 
     @ApiModelProperty(
             value = "프로젝트에 참여한 사람의 이름",
@@ -19,7 +19,7 @@ public class UserInProjectProjectCardRes {
     )
     private String imgUrl;
 
-    public UserInProjectProjectCardRes(UserEntity userEntity){
+    public UserInProjectRes(UserEntity userEntity){
         this.name = userEntity.getName();
         this.imgUrl = userEntity.getImgUrl();
     }
