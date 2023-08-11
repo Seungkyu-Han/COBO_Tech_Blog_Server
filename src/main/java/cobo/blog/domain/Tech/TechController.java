@@ -75,7 +75,7 @@ public class TechController {
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam("skillTag") Integer skillTag){
-        return techService.getPostsBySkillTag(page, size, skillTag);
+            @RequestParam("skillTag") Integer skillTagId){
+        return techService.getPostsBySkillTag(page, size, skillTagId);
     }
 }

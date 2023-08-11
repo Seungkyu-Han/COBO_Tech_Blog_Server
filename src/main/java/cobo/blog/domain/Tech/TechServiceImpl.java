@@ -42,10 +42,10 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTag) {
+    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
-                skillTag, pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
+                skillTagId, pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
             techTechPostRes.add(new TechTechPostRes(techPostEntity));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
