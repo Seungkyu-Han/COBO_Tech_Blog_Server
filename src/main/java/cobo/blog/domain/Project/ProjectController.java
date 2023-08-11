@@ -1,6 +1,7 @@
 package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
+import cobo.blog.domain.Project.Data.Dto.ProjectProjectRes;
 import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -50,5 +51,23 @@ public class ProjectController {
     })
     public ResponseEntity<Long> getProjectCount(){
         return projectService.getProjectCount();
+    }
+
+    @GetMapping("/project")
+    @ApiOperation(
+            value = "Project 내용을 가져오는 API",
+            notes = "어렵네",
+            response = TechTechPostRes.class
+    )
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "projectId", value = "프로젝트의 id", example = "1", required = true)
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<ProjectProjectRes> getProject(
+            @RequestParam("projectId") Integer projectId
+    ){
+        return projectService.getProject(projectId);
     }
 }
