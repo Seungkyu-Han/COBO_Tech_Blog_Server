@@ -12,6 +12,12 @@ import java.util.List;
 public class ProjectProjectCardRes {
 
     @ApiModelProperty(
+            value = "프로젝트 id",
+            example = "1"
+    )
+    private Integer id;
+
+    @ApiModelProperty(
             value = "프로젝트 이미지 url",
             example = "https://avatars.githubusercontent.com/u/98071131?s=400&u=9107a0b50b52da5bbc8528157eed1cca34feb3c5&v=4"
     )
@@ -38,13 +44,8 @@ public class ProjectProjectCardRes {
     )
     private String description;
 
-    @ApiModelProperty(
-            value = "해당 project의 url",
-            example = "https://seungkyu-han.tistory.com/"
-    )
-    private String url;
-
     public ProjectProjectCardRes(ProjectEntity projectEntity) {
+        this.id = projectEntity.getId();
         this.imgUrl = projectEntity.getImgUrl();
         this.title = projectEntity.getTitle();
         this.createdAt = DateConversion.DateToString(projectEntity.getCreatedAt());
@@ -55,6 +56,5 @@ public class ProjectProjectCardRes {
             this.users.add(new UserInProjectProjectCardRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
             this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
-        this.url = projectEntity.getUrl();
     }
 }
