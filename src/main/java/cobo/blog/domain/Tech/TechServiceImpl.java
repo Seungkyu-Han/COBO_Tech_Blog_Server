@@ -47,11 +47,16 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
+    //삭제 예정
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
                 skillTagId, pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
             techTechPostRes.add(new TechTechPostRes(techPostEntity));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
+    }
+
+    public ResponseEntity<TechTechPostRes> getPost(Integer techPostId) {
+        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
     }
 }

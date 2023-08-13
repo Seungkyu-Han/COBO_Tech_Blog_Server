@@ -82,4 +82,19 @@ public class TechController {
             @RequestParam("skillTagId") Integer skillTagId){
         return techService.getPostsBySkillTag(page, size, skillTagId);
     }
+
+    @GetMapping("/post")
+    @ApiOperation(
+            value = "post의 내용을 가져오는 API",
+            notes = "id로 검색합니다.",
+            response = TechTechPostRes.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<TechTechPostRes> getPost(
+            @RequestParam("techPostId") Integer techPostId
+    ){
+        return techService.getPost(techPostId);
+    }
 }
