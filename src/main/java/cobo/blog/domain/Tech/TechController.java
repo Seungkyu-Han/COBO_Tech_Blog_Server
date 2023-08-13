@@ -23,7 +23,8 @@ public class TechController {
     @GetMapping("/posts")
     @ApiOperation(
             value = "Tech Post 의 정보를 List 응답",
-            notes = "페이지 1부터 시작합니다, 주의 부탁드립니다.",
+            notes = "페이지 1부터 시작합니다, 주의 부탁드립니다.\n" +
+                    "skillTagId에 값이 없으면 모두 조회, 있으면 그 skillTagId로 조회",
             response = TechTechPostRes.class
     )
     @ApiImplicitParams({
@@ -35,8 +36,9 @@ public class TechController {
     })
     public ResponseEntity<List<TechTechPostRes>> getPosts(
             @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size){
-        return techService.getPosts(page, size);
+            @RequestParam("size") Integer size,
+            @RequestParam(value = "skillTagId", required = false) Integer skillTagId){
+        return techService.getPosts(page, size, skillTagId);
     }
 
     @GetMapping("/count")
@@ -68,7 +70,7 @@ public class TechController {
     @GetMapping("/posts-skilltag")
     @ApiOperation(
             value = "SkillTag id에 맞는 techPost를 불러오는 API",
-            notes = "화이팅!",
+            notes = "삭제 예정",
             response = TechTechPostRes.class
     )
     @ApiResponses({
@@ -77,7 +79,7 @@ public class TechController {
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam("skillTag") Integer skillTagId){
+            @RequestParam("skillTagId") Integer skillTagId){
         return techService.getPostsBySkillTag(page, size, skillTagId);
     }
 }
