@@ -1,4 +1,4 @@
-package cobo.blog.domain.Tech.Data.Dto;
+package cobo.blog.domain.Tech.Data.Dto.Res;
 
 import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
