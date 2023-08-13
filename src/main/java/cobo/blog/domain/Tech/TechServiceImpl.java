@@ -10,12 +10,9 @@ import cobo.blog.global.Repository.TechPostRepository;
 import cobo.blog.global.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -47,6 +44,8 @@ public class TechServiceImpl {
     private String bucket;
     @Value("${cloud.aws.s3.path}")
     private String path;
+    @Value("${cloud.aws.s3.path-md}")
+    private String pathMd;
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
@@ -89,7 +88,7 @@ public class TechServiceImpl {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(multipartFile.getContentType());
             metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(bucket,"md/"+ uuidName, multipartFile.getInputStream(), metadata);
+            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
             TechPostEntity techPostEntity = TechPostEntity.builder()
                     .title(techTechPostReq.getTitle())
