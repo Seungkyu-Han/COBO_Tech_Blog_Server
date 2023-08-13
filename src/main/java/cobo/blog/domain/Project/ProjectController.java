@@ -2,7 +2,7 @@ package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
 import cobo.blog.domain.Project.Data.Dto.ProjectProjectRes;
-import cobo.blog.domain.Tech.Data.Dto.TechTechPostRes;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
