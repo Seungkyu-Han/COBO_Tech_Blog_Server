@@ -1,6 +1,5 @@
 package cobo.blog.domain.All;
 
-import cobo.blog.domain.About.Data.Dto.AboutMemberRes;
 import cobo.blog.domain.All.Data.Dto.AllHitRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,14 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/all")
 @AllArgsConstructor
-@Api(tags = {"05. 모든 화면에 사용하는 API"})
+@Api(tags = {"00. 모든 화면에 사용하는 API"})
 public class AllController {
 
     private final AllServiceImpl allService;
