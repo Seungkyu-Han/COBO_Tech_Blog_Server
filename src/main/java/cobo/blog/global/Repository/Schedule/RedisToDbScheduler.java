@@ -1,7 +1,9 @@
 package cobo.blog.global.Repository.Schedule;
 
 import cobo.blog.global.Data.Entity.HitEntity;
+import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Repository.HitRepository;
+import cobo.blog.global.Repository.TechPostRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,9 +21,15 @@ public class RedisToDbScheduler {
     private RedisTemplate<String, String> redisTemplate;
     private HitRepository hitRepository;
 
+    private TechPostRepository techPostRepository;
+
     @Scheduled(cron = "0 0 0 * * *")
+    public void saveHitToDb(){
+        saveMainHitToDB();
+        saveTechPostHitToDb();
+    }
     @Transactional
-    public void saveHitToDB(){
+    public void saveMainHitToDB(){
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
@@ -34,5 +42,13 @@ public class RedisToDbScheduler {
         log.info("today: {}. total: {}", today, today + total);
 
         hitRepository.save(hitEntity);
+    }
+    @Transactional
+    public void saveTechPostHitToDb() {
+        for(TechPostEntity techPostEntity : techPostRepository.findAll()){
+            Long hit = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("techPost" + techPostEntity.getId())));
+            techPostEntity.setViewCount(techPostEntity.getViewCount() + hit);
+            techPostRepository.save(techPostEntity);
+        }
     }
 }

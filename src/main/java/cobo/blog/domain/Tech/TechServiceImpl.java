@@ -9,6 +9,7 @@ import cobo.blog.global.Repository.TechPostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class TechServiceImpl {
 
     private final TechPostRepository techPostRepository;
     private final SkillTagRepository skillTagRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
@@ -47,7 +49,7 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    //삭제 예정
+    //삭제 예
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
@@ -57,6 +59,7 @@ public class TechServiceImpl {
     }
 
     public ResponseEntity<TechTechPostRes> getPost(Integer techPostId) {
+        redisTemplate.opsForValue().increment("techPost" + techPostId);
         return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
     }
 }

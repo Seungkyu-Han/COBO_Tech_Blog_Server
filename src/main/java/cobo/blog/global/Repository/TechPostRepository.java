@@ -35,4 +35,11 @@ public interface TechPostRepository extends JpaRepository<TechPostEntity, Intege
                     "WHERE tp.id = :techPostId"
     )
     TechPostEntity findByTechPostId(Integer techPostId);
+
+    @Query(
+            "SELECT tp.id FROM TechPostEntity tp"
+    )
+    List<Integer> getTechPostIds();
+
+
 }
