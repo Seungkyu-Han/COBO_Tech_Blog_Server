@@ -29,4 +29,17 @@ public interface TechPostRepository extends JpaRepository<TechPostEntity, Intege
                     "WHERE st.id = :skillTagId"
     )
     Long countTechPostEntitiesBySkillTag(Integer skillTagId);
+
+    @Query(
+            "SELECT tp FROM TechPostEntity tp " +
+                    "WHERE tp.id = :techPostId"
+    )
+    TechPostEntity findByTechPostId(Integer techPostId);
+
+    @Query(
+            "SELECT tp.id FROM TechPostEntity tp"
+    )
+    List<Integer> getTechPostIds();
+
+
 }
