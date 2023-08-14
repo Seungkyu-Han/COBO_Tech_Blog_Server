@@ -49,8 +49,8 @@ public class TechServiceImpl {
     private String bucket;
     @Value("${cloud.aws.s3.path}")
     private String path;
-    @Value("${cloud.aws.s3.path-md}")
-    private String pathMd;
+    @Value("${cloud.aws.s3.path-txt}")
+    private String pathTxt;
     @Value("${cloud.aws.s3.path-img}")
     private String pathImg;
     private final String techPostRedisName = "techPost";
@@ -61,7 +61,7 @@ public class TechServiceImpl {
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
         for(TechPostEntity techPostEntity : (skillTagId == null) ?
                 techPostRepository.findAll(pageRequest) : techPostRepository.getTechPostEntitiesBySkillTagId(skillTagId, pageRequest))
-            techTechPostRes.add(new TechTechPostRes(techPostEntity, path + pathMd));
+            techTechPostRes.add(new TechTechPostRes(techPostEntity, path + pathTxt));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
@@ -87,7 +87,7 @@ public class TechServiceImpl {
 
     public ResponseEntity<TechTechPostRes> readPost(Integer techPostId) {
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
-        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path + pathMd), HttpStatus.OK);
+        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path + pathTxt), HttpStatus.OK);
     }
 
     /**
@@ -101,7 +101,7 @@ public class TechServiceImpl {
     @Transactional
     public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) throws IOException{
 
-        String uuidName = uploadToS3(multipartFile, pathMd);
+        String uuidName = uploadToS3(multipartFile, pathTxt);
 
         TechPostEntity techPostEntity = new TechPostEntity
                 (
@@ -140,9 +140,9 @@ public class TechServiceImpl {
 
         techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
 
-        amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
+        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
 
-        String uuidName = uploadToS3(multipartFile, pathMd);
+        String uuidName = uploadToS3(multipartFile, pathTxt);
 
         techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName);
 
@@ -166,7 +166,7 @@ public class TechServiceImpl {
         for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
             amazonS3Client.deleteObject(bucket, pathImg + fileEntity.getFileName());
         fileRepository.deleteAllByTechPost(techPostEntity);
-        amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
+        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
         techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
         return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
     }
