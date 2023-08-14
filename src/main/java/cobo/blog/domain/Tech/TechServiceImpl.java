@@ -1,15 +1,14 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
+import cobo.blog.global.Data.Entity.FileEntity;
 import cobo.blog.global.Data.Entity.SkillTagEntity;
 import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
-import cobo.blog.global.Repository.SkillTagRepository;
-import cobo.blog.global.Repository.TechPostRepository;
-import cobo.blog.global.Repository.TechPostSkillTagMappingRepository;
-import cobo.blog.global.Repository.UserRepository;
+import cobo.blog.global.Repository.*;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,6 +43,7 @@ public class TechServiceImpl {
     private final SkillTagRepository skillTagRepository;
     private final TechPostSkillTagMappingRepository techPostSkillTagMappingRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final FileRepository fileRepository;
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -50,13 +51,17 @@ public class TechServiceImpl {
     private String path;
     @Value("${cloud.aws.s3.path-md}")
     private String pathMd;
+    @Value("${cloud.aws.s3.path-img}")
+    private String pathImg;
     private final String techPostRedisName = "techPost";
+    private final String PostExtension = ".txt";
+
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
         for(TechPostEntity techPostEntity : (skillTagId == null) ?
                 techPostRepository.findAll(pageRequest) : techPostRepository.getTechPostEntitiesBySkillTagId(skillTagId, pageRequest))
-            techTechPostRes.add(new TechTechPostRes(techPostEntity, path));
+            techTechPostRes.add(new TechTechPostRes(techPostEntity, path + pathMd));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
@@ -73,75 +78,97 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
+    /**
+     * techPost 글을 하나 읽어오는 메서드
+     * @param techPostId 읽어 올 techPost 글의 Id
+     * @return ResponseEntity
+     * @Author Seungkyu-Han
+     */
+
     public ResponseEntity<TechTechPostRes> readPost(Integer techPostId) {
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
-        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path), HttpStatus.OK);
+        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path + pathMd), HttpStatus.OK);
     }
 
+    /**
+     * 작성한 글을 업로드하는 메서드(SkillTag, file 연관 로직까지 수행)
+     * @param techTechPostReq TechPost DTO
+     * @param multipartFile 글이 작성된 파일
+     * @return ResponseEntity
+     * @throws IOException S3 파일 업로드 에러
+     * @Author Seungkyu-Han
+     */
     @Transactional
-    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
-        try {
-            //S3에 데이터 업로드
-            UUID uuidName = UUID.randomUUID();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(multipartFile.getContentType());
-            metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
+    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) throws IOException{
 
+        String uuidName = uploadToS3(multipartFile, pathMd);
 
-            //TechPost 데이터 생성
-            TechPostEntity techPostEntity = new TechPostEntity
-                    (
-                    techTechPostReq.getTitle(),
-                    techTechPostReq.getContent(),
-                    uuidName.toString(),
-                    userRepository.getById(techTechPostReq.getUserId())
-                    );
+        TechPostEntity techPostEntity = new TechPostEntity
+                (
+                        techTechPostReq.getTitle(),
+                        techTechPostReq.getContent(),
+                        uuidName,
+                        userRepository.getById(techTechPostReq.getUserId())
+                );
 
-            //Mapping 데이터 추가
-            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
-            techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
+        List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
 
-            techPostRepository.save(techPostEntity);
+        techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
+        techPostRepository.save(techPostEntity);
 
-            redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
+        redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
 
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        for(FileEntity fileEntity : fileRepository.findAllById(techPostRepository.getTechPostIdList())){
+            fileEntity.setTechPost(techPostEntity);
+            fileRepository.save(fileEntity);
         }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    /**
+     * 작성한 글을 수정하는 메서드(수정 예정)
+     * @param techTechPostReq techPostDto
+     * @param multipartFile 글이 수정된 파일
+     * @return ResponseEntity<HttpStatus>
+     * @throws IOException S3 파일 업로드 에러
+     */
     @Transactional
-    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
-        //Tech ID로 해당 TechPost 가져오기
+    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) throws IOException{
+
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechPostReq.getTechPostId());
-        //techPostSkillTagRepository에 연관된 데이터 삭제해두기
+
         techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
-        //S3에 저장된 내용 지우기
+
         amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
-        try{
-            //S3에 데이터 업로드
-            UUID uuidName = UUID.randomUUID();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(multipartFile.getContentType());
-            metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-            techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName.toString());
+        String uuidName = uploadToS3(multipartFile, pathMd);
 
-            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
+        techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName);
 
-            techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
-            techPostRepository.save(techPostEntity);
+        List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
 
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
+        techPostRepository.save(techPostEntity);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    /**
+     * techPost 글을 삭제하는 메서드 (S3에서 이미지, txt를 삭제하고 DB에 있는 내용을 삭제함)
+     * @param techPostId 삭제하고 싶은 techPost의 ID
+     * @return ResponseEntity<HttpStatus>
+     * @Author Seungkyu-Han
+     */
+    @Transactional
+    public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
+        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
+        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
+            amazonS3Client.deleteObject(bucket, pathImg + fileEntity.getFileName());
+        fileRepository.deleteAllByTechPost(techPostEntity);
+        amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
+        techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
+        return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
     }
 
     private List<TechPostSkillTagMappingEntity> skillTagMapping(TechTechPostReq techTechPostReq, TechPostEntity techPostEntity){
@@ -152,5 +179,47 @@ public class TechServiceImpl {
             techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
         }
         return techPostSkillTagMappingEntities;
+    }
+
+    public ResponseEntity<List<TechImgRes>> createImg(List<MultipartFile> multipartFileList) throws IOException{
+        List<TechImgRes> techImgResList = new ArrayList<>();
+        for(MultipartFile multipartFile : multipartFileList)
+        {
+            String uuidName = uploadToS3(multipartFile, pathImg);
+
+            FileEntity fileEntity = new FileEntity(uuidName);
+            fileRepository.save(fileEntity);
+
+            techImgResList.add(new TechImgRes(fileEntity.getId(), path + pathImg + uuidName));
+        }
+        return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
+
+    }
+
+    /**
+     * 파일을 업로드 하는 메서드
+     * @param multipartFile 업로드 할 파일
+     * @param path 업로드 할 파일의 경로
+     * @return uuid + extension
+     * @throws IOException 파일을 업로드하다가 발생하는 에러
+     * @Author Seungkyu-Han
+     */
+    private String uploadToS3(MultipartFile multipartFile, String path) throws IOException{
+        String uuidName = UUID.randomUUID() + getExtension(multipartFile);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(multipartFile.getSize());
+        amazonS3Client.putObject(bucket,  path + uuidName, multipartFile.getInputStream(), metadata);
+        return uuidName;
+    }
+
+    /**
+     *
+     * @param multipartFile Extension을 가져올 파일
+     * @return 해당 파일의 Extension
+     * @Author Seungkyu-Han
+     */
+    private String getExtension(MultipartFile multipartFile){
+        return StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
     }
 }

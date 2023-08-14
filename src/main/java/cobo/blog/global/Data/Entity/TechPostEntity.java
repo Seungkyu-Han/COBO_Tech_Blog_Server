@@ -35,8 +35,11 @@ public class TechPostEntity {
     @JoinColumn(name = "user")
     private UserEntity user;
 
-    @OneToMany(mappedBy = "techPost", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "techPost", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<TechPostSkillTagMappingEntity> techPostSkillTagMappings;
+
+    @OneToMany(mappedBy = "techPost", orphanRemoval = true)
+    private List<FileEntity> fileEntities;
     public TechPostEntity(String title, String content, String fileName, UserEntity user) {
         this.title = title;
         this.content = content;

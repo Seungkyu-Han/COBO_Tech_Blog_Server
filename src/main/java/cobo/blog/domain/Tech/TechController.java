@@ -1,15 +1,18 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -90,7 +93,7 @@ public class TechController {
     )
     public ResponseEntity<HttpStatus> createPost(
             @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
-            @RequestPart(value = "multipartFile") MultipartFile multipartFile){
+            @RequestPart(value = "multipartFile") MultipartFile multipartFile) throws IOException {
         return techService.createPost(techTechPostReq, multipartFile);
     }
 
@@ -103,7 +106,32 @@ public class TechController {
     public ResponseEntity<HttpStatus> updatePost(
             @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
             @RequestPart(value = "multipartFile") MultipartFile multipartFile
-    ){
+    )throws IOException{
         return techService.updatePost(techTechPostReq, multipartFile);
+    }
+
+    @DeleteMapping("/post")
+    @ApiOperation(
+            value = "techPost를 삭제하는 API",
+            notes = "이것도 일단 대충 만들어봄",
+            response = HttpStatus.class
+    )
+    public ResponseEntity<HttpStatus> deletePost(
+            @RequestParam("techPostId") Integer techPostId
+    ){
+        return techService.deletePost(techPostId);
+    }
+
+    @PostMapping(value = "/img",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ApiOperation(
+            value = "techPost에 이미지를 올리는 API",
+            notes = "일단 만들고 후에 수정"
+    )
+    public ResponseEntity<List<TechImgRes>> createImg(
+            @RequestPart(value = "multipartFile") List<MultipartFile> multipartFileList
+    )throws IOException{
+        return techService.createImg(multipartFileList);
     }
 }

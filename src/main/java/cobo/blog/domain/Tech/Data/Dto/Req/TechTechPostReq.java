@@ -35,4 +35,10 @@ public class TechTechPostReq {
             example = "[1, 2, 3]"
     )
     private List<Integer> skillTagIdList;
+
+    @ApiModelProperty(
+            value = "사용했던 img들의 id list",
+            example = "[5, 6, 7]"
+    )
+    private List<Integer> fileIdList;
 }
