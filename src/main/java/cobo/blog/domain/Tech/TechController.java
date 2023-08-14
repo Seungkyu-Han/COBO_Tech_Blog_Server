@@ -76,10 +76,10 @@ public class TechController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<TechTechPostRes> getPost(
+    public ResponseEntity<TechTechPostRes> readPost(
             @RequestParam("techPostId") Integer techPostId
     ){
-        return techService.getPost(techPostId);
+        return techService.readPost(techPostId);
     }
 
     @PostMapping("/post")
@@ -93,5 +93,7 @@ public class TechController {
             @RequestPart(value = "multipartFile") MultipartFile multipartFile){
         return techService.createPost(techTechPostReq, multipartFile);
     }
+
+
 
 }

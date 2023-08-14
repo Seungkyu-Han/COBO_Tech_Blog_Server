@@ -71,7 +71,7 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    public ResponseEntity<TechTechPostRes> getPost(Integer techPostId) {
+    public ResponseEntity<TechTechPostRes> readPost(Integer techPostId) {
         redisTemplate.opsForValue().increment(redisName + techPostId);
         return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
     }
