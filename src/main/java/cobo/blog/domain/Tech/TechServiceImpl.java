@@ -59,7 +59,7 @@ public class TechServiceImpl {
     public ResponseEntity<Long> getTechCount(Integer skillTagId) {
         return (skillTagId == null) ?
                 new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK):
-                new ResponseEntity<>(techPostRepository.countTechPostEntitiesBySkillTag(skillTagId), HttpStatus.OK);
+                new ResponseEntity<>(techPostRepository.countTechPostEntitiesBySkillTagId(skillTagId), HttpStatus.OK);
     }
 
     public ResponseEntity<List<TechSkillTagRes>> getSkillTags() {
@@ -69,7 +69,7 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    //삭제 예
+    //삭제 예정
     public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
