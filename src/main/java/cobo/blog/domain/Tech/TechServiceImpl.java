@@ -46,6 +46,7 @@ public class TechServiceImpl {
     private String path;
     @Value("${cloud.aws.s3.path-md}")
     private String pathMd;
+    private final String redisName = "techPost";
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
@@ -78,7 +79,7 @@ public class TechServiceImpl {
     }
 
     public ResponseEntity<TechTechPostRes> getPost(Integer techPostId) {
-        redisTemplate.opsForValue().increment("techPost" + techPostId);
+        redisTemplate.opsForValue().increment(redisName + techPostId);
         return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
     }
 
@@ -97,6 +98,8 @@ public class TechServiceImpl {
                     .build();
 
             techPostRepository.save(techPostEntity);
+
+            redisTemplate.opsForValue().set(redisName + techPostEntity.getId(), "0");
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IOException e) {
