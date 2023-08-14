@@ -1,12 +1,15 @@
 package cobo.blog.global.Data.Entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Data
 @Table(name = "TechPostSkillTagMapping")
+@NoArgsConstructor
 public class TechPostSkillTagMappingEntity {
 
 
@@ -21,4 +24,9 @@ public class TechPostSkillTagMappingEntity {
     @ManyToOne
     @JoinColumn(name = "skillTag")
     private SkillTagEntity skillTag;
+
+    public TechPostSkillTagMappingEntity(TechPostEntity techPost, SkillTagEntity skillTag) {
+        this.techPost = techPost;
+        this.skillTag = skillTag;
+    }
 }

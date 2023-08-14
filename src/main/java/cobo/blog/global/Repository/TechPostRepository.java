@@ -28,7 +28,7 @@ public interface TechPostRepository extends JpaRepository<TechPostEntity, Intege
                     "INNER JOIN tsm.skillTag st " +
                     "WHERE st.id = :skillTagId"
     )
-    Long countTechPostEntitiesBySkillTag(Integer skillTagId);
+    Long countTechPostEntitiesBySkillTagId(Integer skillTagId);
 
     @Query(
             "SELECT tp FROM TechPostEntity tp " +

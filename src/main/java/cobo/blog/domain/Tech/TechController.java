@@ -66,23 +66,7 @@ public class TechController {
             @ApiResponse(code = 200, message = "응답 성공")
     })
     public ResponseEntity<List<TechSkillTagRes>> getSkillTags(){return techService.getSkillTags();}
-
-    @GetMapping("/posts-skilltag")
-    @ApiOperation(
-            value = "SkillTag id에 맞는 techPost를 불러오는 API",
-            notes = "삭제 예정",
-            response = TechTechPostRes.class
-    )
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "응답 성공")
-    })
-    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size,
-            @RequestParam("skillTagId") Integer skillTagId){
-        return techService.getPostsBySkillTag(page, size, skillTagId);
-    }
-
+    
     @GetMapping("/post")
     @ApiOperation(
             value = "post의 내용을 가져오는 API",
