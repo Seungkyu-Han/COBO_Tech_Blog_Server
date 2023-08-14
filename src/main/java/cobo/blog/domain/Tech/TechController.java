@@ -76,10 +76,10 @@ public class TechController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<TechTechPostRes> getPost(
+    public ResponseEntity<TechTechPostRes> readPost(
             @RequestParam("techPostId") Integer techPostId
     ){
-        return techService.getPost(techPostId);
+        return techService.readPost(techPostId);
     }
 
     @PostMapping("/post")
@@ -94,4 +94,16 @@ public class TechController {
         return techService.createPost(techTechPostReq, multipartFile);
     }
 
+    @PatchMapping("/post")
+    @ApiOperation(
+            value = "techPost를 수정하는 API",
+            notes = "이것도 일단 대충 만들어봄",
+            response = HttpStatus.class
+    )
+    public ResponseEntity<HttpStatus> updatePost(
+            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
+            @RequestPart(value = "multipartFile") MultipartFile multipartFile
+    ){
+        return techService.updatePost(techTechPostReq, multipartFile);
+    }
 }

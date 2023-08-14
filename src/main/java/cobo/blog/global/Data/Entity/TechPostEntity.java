@@ -1,6 +1,6 @@
 package cobo.blog.global.Data.Entity;
 
-import lombok.Builder;
+import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -27,7 +27,7 @@ public class TechPostEntity {
 
     private String content;
 
-    private String url;
+    private String fileName;
 
     private Long viewCount;
 
@@ -37,12 +37,18 @@ public class TechPostEntity {
 
     @OneToMany(mappedBy = "techPost", cascade = CascadeType.PERSIST)
     private List<TechPostSkillTagMappingEntity> techPostSkillTagMappings;
-    public TechPostEntity(String title, String content, String url, UserEntity user) {
+    public TechPostEntity(String title, String content, String fileName, UserEntity user) {
         this.title = title;
         this.content = content;
-        this.url = url;
+        this.fileName = fileName;
         this.user = user;
         this.createdAt = Date.from(Instant.now());
         this.viewCount = 0L;
+    }
+
+    public void UpdateByTechTechPostReqAndUrl(TechTechPostReq techTechPostReq, String fileName){
+        this.title = techTechPostReq.getTitle();
+        this.content = techTechPostReq.getContent();
+        this.fileName = fileName;
     }
 }
