@@ -9,4 +9,10 @@ import java.util.List;
 
 @Repository
 public interface SkillTagRepository extends JpaRepository<SkillTagEntity, Integer> {
+
+    @Query(
+            "SELECT st FROM SkillTagEntity st " +
+                    "WHERE st.id IN :skillTagIdList"
+    )
+    List<SkillTagEntity> getSkillTagEntitiesByIdList(List<Integer> skillTagIdList);
 }

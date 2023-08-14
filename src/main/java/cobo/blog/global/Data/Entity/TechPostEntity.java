@@ -35,12 +35,11 @@ public class TechPostEntity {
     @JoinColumn(name = "user")
     private UserEntity user;
 
-    @OneToMany(mappedBy = "techPost")
+    @OneToMany(mappedBy = "techPost", cascade = CascadeType.PERSIST)
     private List<TechPostSkillTagMappingEntity> techPostSkillTagMappings;
-
-    @Builder
-    public TechPostEntity(String title, String url, UserEntity user){
+    public TechPostEntity(String title, String content, String url, UserEntity user) {
         this.title = title;
+        this.content = content;
         this.url = url;
         this.user = user;
         this.createdAt = Date.from(Instant.now());

@@ -5,6 +5,7 @@ import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import cobo.blog.global.Data.Entity.SkillTagEntity;
 import cobo.blog.global.Data.Entity.TechPostEntity;
+import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
 import cobo.blog.global.Repository.SkillTagRepository;
 import cobo.blog.global.Repository.TechPostRepository;
 import cobo.blog.global.Repository.UserRepository;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -69,33 +71,39 @@ public class TechServiceImpl {
         return new ResponseEntity<>(techSkillTagRes, HttpStatus.OK);
     }
 
-    //삭제 예정
-    public ResponseEntity<List<TechTechPostRes>> getPostsBySkillTag(Integer page, Integer size, Integer skillTagId) {
-        List<TechTechPostRes> techTechPostRes = new ArrayList<>();
-        for(TechPostEntity techPostEntity : techPostRepository.getTechPostEntitiesBySkillTagId(
-                skillTagId, pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
-            techTechPostRes.add(new TechTechPostRes(techPostEntity));
-        return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
-    }
-
     public ResponseEntity<TechTechPostRes> getPost(Integer techPostId) {
         redisTemplate.opsForValue().increment(redisName + techPostId);
         return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
         try {
+            //S3에 데이터 업로드
             UUID uuidName = UUID.randomUUID();
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(multipartFile.getContentType());
             metadata.setContentLength(multipartFile.getSize());
             amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-            TechPostEntity techPostEntity = TechPostEntity.builder()
-                    .title(techTechPostReq.getTitle())
-                    .url(path + uuidName)
-                    .user(userRepository.getById(techTechPostReq.getUserId()))
-                    .build();
+
+            //TechPost 데이터 생성
+            TechPostEntity techPostEntity = new TechPostEntity
+                    (
+                    techTechPostReq.getTitle(),
+                    techTechPostReq.getContent(),
+                    path + uuidName,
+                    userRepository.getById(techTechPostReq.getUserId())
+                    );
+
+            //Mapping 데이터 추가
+            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = new ArrayList<>();
+            for(SkillTagEntity skillTagEntity : skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList())){
+                TechPostSkillTagMappingEntity techPostSkillTagMappingEntity = new TechPostSkillTagMappingEntity(
+                        techPostEntity, skillTagEntity);
+                techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
+            }
+            techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
 
             techPostRepository.save(techPostEntity);
 
