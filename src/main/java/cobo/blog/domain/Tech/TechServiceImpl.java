@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import static cobo.blog.global.Util.PageRequestUtil.pageRequestGenerator;
@@ -54,6 +53,7 @@ public class TechServiceImpl {
     @Value("${cloud.aws.s3.path-img}")
     private String pathImg;
     private final String techPostRedisName = "techPost";
+
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
@@ -143,6 +143,11 @@ public class TechServiceImpl {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
+        techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
+        return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+    }
+
     private List<TechPostSkillTagMappingEntity> skillTagMapping(TechTechPostReq techTechPostReq, TechPostEntity techPostEntity){
         List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = new ArrayList<>();
         for(SkillTagEntity skillTagEntity : skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList())){
@@ -170,8 +175,4 @@ public class TechServiceImpl {
 
     }
 
-    public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
-        techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
-        return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
-    }
 }
