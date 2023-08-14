@@ -82,76 +82,66 @@ public class TechServiceImpl {
     }
 
     @Transactional
-    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
+    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) throws IOException{
 
-        try {
-            //S3에 데이터 업로드
-            UUID uuidName = UUID.randomUUID();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(multipartFile.getContentType());
-            metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
+        //S3에 데이터 업로드
+        UUID uuidName = UUID.randomUUID();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(multipartFile.getSize());
+        amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
 
-            //TechPost 데이터 생성
-            TechPostEntity techPostEntity = new TechPostEntity
-                    (
-                    techTechPostReq.getTitle(),
-                    techTechPostReq.getContent(),
-                    uuidName.toString(),
-                    userRepository.getById(techTechPostReq.getUserId())
-                    );
+        //TechPost 데이터 생성
+        TechPostEntity techPostEntity = new TechPostEntity
+                (
+                        techTechPostReq.getTitle(),
+                        techTechPostReq.getContent(),
+                        uuidName.toString(),
+                        userRepository.getById(techTechPostReq.getUserId())
+                );
 
-            //Mapping 데이터 추가
-            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
-            techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
+        //Mapping 데이터 추가
+        List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
+        techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
 
-            techPostRepository.save(techPostEntity);
+        techPostRepository.save(techPostEntity);
 
-            redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
+        redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
 
-            //이미지와 글 mapping
-            for(FileEntity fileEntity : fileRepository.findAllById(techPostRepository.getTechPostIdList())){
-                fileEntity.setTechPost(techPostEntity);
-                fileRepository.save(fileEntity);
-            }
-
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        //이미지와 글 mapping
+        for(FileEntity fileEntity : fileRepository.findAllById(techPostRepository.getTechPostIdList())){
+            fileEntity.setTechPost(techPostEntity);
+            fileRepository.save(fileEntity);
         }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Transactional
-    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
+    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) throws IOException{
         //Tech ID로 해당 TechPost 가져오기
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechPostReq.getTechPostId());
         //techPostSkillTagRepository에 연관된 데이터 삭제해두기
         techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
         //S3에 저장된 내용 지우기
         amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
-        try{
-            //S3에 데이터 업로드
-            UUID uuidName = UUID.randomUUID();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(multipartFile.getContentType());
-            metadata.setContentLength(multipartFile.getSize());
-            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-            techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName.toString());
+        //S3에 데이터 업로드
+        UUID uuidName = UUID.randomUUID();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(multipartFile.getContentType());
+        metadata.setContentLength(multipartFile.getSize());
+        amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
+        techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName.toString());
 
-            techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
-            techPostRepository.save(techPostEntity);
+        List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
 
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
+        techPostRepository.save(techPostEntity);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     private List<TechPostSkillTagMappingEntity> skillTagMapping(TechTechPostReq techTechPostReq, TechPostEntity techPostEntity){
@@ -164,26 +154,21 @@ public class TechServiceImpl {
         return techPostSkillTagMappingEntities;
     }
 
-    public ResponseEntity<List<TechImgRes>> createImg(List<MultipartFile> multipartFileList) {
+    public ResponseEntity<List<TechImgRes>> createImg(List<MultipartFile> multipartFileList) throws IOException{
         List<TechImgRes> techImgResList = new ArrayList<>();
-        try{
-            for(MultipartFile multipartFile : multipartFileList)
-            {
-                UUID uuid = UUID.randomUUID();
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(multipartFile.getContentType());
-                metadata.setContentLength(multipartFile.getSize());
-                amazonS3Client.putObject(bucket, pathImg + uuid, multipartFile.getInputStream(), metadata);
-                FileEntity fileEntity = new FileEntity(uuid.toString());
-                fileRepository.save(fileEntity);
-                techImgResList.add(new TechImgRes(fileEntity.getId(), path + pathImg + uuid));
-            }
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        for(MultipartFile multipartFile : multipartFileList)
+        {
+            UUID uuid = UUID.randomUUID();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(multipartFile.getContentType());
+            metadata.setContentLength(multipartFile.getSize());
+            amazonS3Client.putObject(bucket, pathImg + uuid, multipartFile.getInputStream(), metadata);
+            FileEntity fileEntity = new FileEntity(uuid.toString());
+            fileRepository.save(fileEntity);
+            techImgResList.add(new TechImgRes(fileEntity.getId(), path + pathImg + uuid));
         }
         return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
+
     }
 
     public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
