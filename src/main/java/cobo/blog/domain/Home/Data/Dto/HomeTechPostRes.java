@@ -30,10 +30,10 @@ public class HomeTechPostRes {
     )
     private String url;
 
-    public HomeTechPostRes(TechPostEntity techPost) {
+    public HomeTechPostRes(TechPostEntity techPost, String path) {
         this.title = techPost.getTitle();
         this.user = techPost.getUser().getName();
         this.Date = techPost.getCreatedAt().toString();
-        this.url = techPost.getUrl();
+        this.url = path + techPost.getFileName();
     }
 }

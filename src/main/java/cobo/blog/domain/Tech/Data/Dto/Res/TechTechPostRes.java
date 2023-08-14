@@ -51,7 +51,7 @@ public class TechTechPostRes {
     )
     private String url;
 
-    public TechTechPostRes(TechPostEntity techPostEntity) {
+    public TechTechPostRes(TechPostEntity techPostEntity, String path) {
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.id = techPostEntity.getId();
         this.title = techPostEntity.getTitle();
@@ -60,7 +60,7 @@ public class TechTechPostRes {
         this.skillTag = new ArrayList<>();
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
             this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
-        this.url = techPostEntity.getUrl();
+        this.url = path + techPostEntity.getFileName();
         this.viewCount = techPostEntity.getViewCount();
     }
 }

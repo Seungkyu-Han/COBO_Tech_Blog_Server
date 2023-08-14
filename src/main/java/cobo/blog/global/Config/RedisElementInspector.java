@@ -21,7 +21,7 @@ public class RedisElementInspector implements ApplicationRunner {
         redisTemplate.opsForValue().setIfAbsent("today", "0");
         redisTemplate.opsForValue().setIfAbsent("total", "0");
 
-        for(Integer techPostId : techPostRepository.getTechPostIds())
+        for(Integer techPostId : techPostRepository.getTechPostIdList())
             redisTemplate.opsForValue().setIfAbsent("techPost" + techPostId, "0");
     }
 }

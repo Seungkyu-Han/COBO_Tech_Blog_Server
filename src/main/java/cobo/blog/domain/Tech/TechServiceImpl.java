@@ -8,6 +8,7 @@ import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
 import cobo.blog.global.Repository.SkillTagRepository;
 import cobo.blog.global.Repository.TechPostRepository;
+import cobo.blog.global.Repository.TechPostSkillTagMappingRepository;
 import cobo.blog.global.Repository.UserRepository;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -40,6 +41,7 @@ public class TechServiceImpl {
     private final TechPostRepository techPostRepository;
     private final UserRepository userRepository;
     private final SkillTagRepository skillTagRepository;
+    private final TechPostSkillTagMappingRepository techPostSkillTagMappingRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
@@ -48,13 +50,13 @@ public class TechServiceImpl {
     private String path;
     @Value("${cloud.aws.s3.path-md}")
     private String pathMd;
-    private final String redisName = "techPost";
+    private final String techPostRedisName = "techPost";
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
         for(TechPostEntity techPostEntity : (skillTagId == null) ?
                 techPostRepository.findAll(pageRequest) : techPostRepository.getTechPostEntitiesBySkillTagId(skillTagId, pageRequest))
-            techTechPostRes.add(new TechTechPostRes(techPostEntity));
+            techTechPostRes.add(new TechTechPostRes(techPostEntity, path));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
@@ -72,8 +74,8 @@ public class TechServiceImpl {
     }
 
     public ResponseEntity<TechTechPostRes> readPost(Integer techPostId) {
-        redisTemplate.opsForValue().increment(redisName + techPostId);
-        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId)), HttpStatus.OK);
+        redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
+        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path), HttpStatus.OK);
     }
 
     @Transactional
@@ -92,7 +94,7 @@ public class TechServiceImpl {
                     (
                     techTechPostReq.getTitle(),
                     techTechPostReq.getContent(),
-                    path + uuidName,
+                    uuidName.toString(),
                     userRepository.getById(techTechPostReq.getUserId())
                     );
 
@@ -102,7 +104,7 @@ public class TechServiceImpl {
 
             techPostRepository.save(techPostEntity);
 
-            redisTemplate.opsForValue().set(redisName + techPostEntity.getId(), "0");
+            redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
@@ -111,9 +113,14 @@ public class TechServiceImpl {
         }
     }
 
+    @Transactional
     public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
+        //Tech ID로 해당 TechPost 가져오기
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechPostReq.getTechPostId());
-        amazonS3Client.deleteObject(bucket, techPostEntity.getUrl());
+        //techPostSkillTagRepository에 연관된 데이터 삭제해두기
+        techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
+        //S3에 저장된 내용 지우기
+        amazonS3Client.deleteObject(bucket, pathMd + techPostEntity.getFileName());
         try{
             //S3에 데이터 업로드
             UUID uuidName = UUID.randomUUID();
@@ -122,11 +129,11 @@ public class TechServiceImpl {
             metadata.setContentLength(multipartFile.getSize());
             amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-            techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq, path + uuidName);
+            techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName.toString());
 
             List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
-            techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
 
+            techPostSkillTagMappingRepository.saveAll(techPostSkillTagMappingEntities);
             techPostRepository.save(techPostEntity);
 
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -144,7 +151,6 @@ public class TechServiceImpl {
                     techPostEntity, skillTagEntity);
             techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
         }
-        techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
         return techPostSkillTagMappingEntities;
     }
 }
