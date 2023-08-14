@@ -91,7 +91,6 @@ public class TechServiceImpl {
         metadata.setContentLength(multipartFile.getSize());
         amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
 
-
         //TechPost 데이터 생성
         TechPostEntity techPostEntity = new TechPostEntity
                 (
