@@ -109,6 +109,18 @@ public class TechController {
         return techService.updatePost(techTechPostReq, multipartFile);
     }
 
+    @DeleteMapping("/post")
+    @ApiOperation(
+            value = "techPost를 삭제하는 API",
+            notes = "이것도 일단 대충 만들어봄",
+            response = HttpStatus.class
+    )
+    public ResponseEntity<HttpStatus> deletePost(
+            @RequestParam("techPostId") Integer techPostId
+    ){
+        return techService.deletePost(techPostId);
+    }
+
     @PostMapping(value = "/img",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE
     )

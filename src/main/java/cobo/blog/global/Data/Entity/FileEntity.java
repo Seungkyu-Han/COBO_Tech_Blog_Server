@@ -19,7 +19,7 @@ public class FileEntity {
 
     @ManyToOne
     @JoinColumn(name = "techPost")
-    private TechPostEntity techPostEntity;
+    private TechPostEntity techPost;
 
     public FileEntity(String fileName){
         this.fileName = fileName;

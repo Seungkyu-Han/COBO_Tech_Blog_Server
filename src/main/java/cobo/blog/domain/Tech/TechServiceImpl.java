@@ -112,7 +112,7 @@ public class TechServiceImpl {
 
             //이미지와 글 mapping
             for(FileEntity fileEntity : fileRepository.findAllById(techPostRepository.getTechPostIdList())){
-                fileEntity.setTechPostEntity(techPostEntity);
+                fileEntity.setTechPost(techPostEntity);
                 fileRepository.save(fileEntity);
             }
 
@@ -184,5 +184,10 @@ public class TechServiceImpl {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
+        techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
+        return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
     }
 }
