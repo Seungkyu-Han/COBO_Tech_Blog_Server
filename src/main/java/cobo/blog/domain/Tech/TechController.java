@@ -1,11 +1,13 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,5 +107,18 @@ public class TechController {
             @RequestPart(value = "multipartFile") MultipartFile multipartFile
     ){
         return techService.updatePost(techTechPostReq, multipartFile);
+    }
+
+    @PostMapping(value = "/img",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ApiOperation(
+            value = "techPost에 이미지를 올리는 API",
+            notes = "일단 만들고 후에 수정"
+    )
+    public ResponseEntity<List<TechImgRes>> createImg(
+            @RequestPart(value = "multipartFile") List<MultipartFile> multipartFileList
+    ){
+        return techService.createImg(multipartFileList);
     }
 }

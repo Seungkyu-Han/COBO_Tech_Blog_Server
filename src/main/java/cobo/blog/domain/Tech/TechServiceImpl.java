@@ -1,15 +1,14 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
+import cobo.blog.global.Data.Entity.FileEntity;
 import cobo.blog.global.Data.Entity.SkillTagEntity;
 import cobo.blog.global.Data.Entity.TechPostEntity;
 import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
-import cobo.blog.global.Repository.SkillTagRepository;
-import cobo.blog.global.Repository.TechPostRepository;
-import cobo.blog.global.Repository.TechPostSkillTagMappingRepository;
-import cobo.blog.global.Repository.UserRepository;
+import cobo.blog.global.Repository.*;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static cobo.blog.global.Util.PageRequestUtil.pageRequestGenerator;
@@ -43,6 +43,7 @@ public class TechServiceImpl {
     private final SkillTagRepository skillTagRepository;
     private final TechPostSkillTagMappingRepository techPostSkillTagMappingRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final FileRepository fileRepository;
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -50,13 +51,15 @@ public class TechServiceImpl {
     private String path;
     @Value("${cloud.aws.s3.path-md}")
     private String pathMd;
+    @Value("${cloud.aws.s3.path-img}")
+    private String pathImg;
     private final String techPostRedisName = "techPost";
     public ResponseEntity<List<TechTechPostRes>> getPosts(Integer page, Integer size, Integer skillTagId) {
         List<TechTechPostRes> techTechPostRes = new ArrayList<>();
         PageRequest pageRequest = pageRequestGenerator(page, size, Sort.Direction.DESC, "id");
         for(TechPostEntity techPostEntity : (skillTagId == null) ?
                 techPostRepository.findAll(pageRequest) : techPostRepository.getTechPostEntitiesBySkillTagId(skillTagId, pageRequest))
-            techTechPostRes.add(new TechTechPostRes(techPostEntity, path));
+            techTechPostRes.add(new TechTechPostRes(techPostEntity, path + pathMd));
         return new ResponseEntity<>(techTechPostRes, HttpStatus.OK);
     }
 
@@ -75,11 +78,12 @@ public class TechServiceImpl {
 
     public ResponseEntity<TechTechPostRes> readPost(Integer techPostId) {
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
-        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path), HttpStatus.OK);
+        return new ResponseEntity<>(new TechTechPostRes(techPostRepository.findByTechPostId(techPostId), path + pathMd), HttpStatus.OK);
     }
 
     @Transactional
     public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
+
         try {
             //S3에 데이터 업로드
             UUID uuidName = UUID.randomUUID();
@@ -105,6 +109,12 @@ public class TechServiceImpl {
             techPostRepository.save(techPostEntity);
 
             redisTemplate.opsForValue().set(techPostRedisName + techPostEntity.getId(), "0");
+
+            //이미지와 글 mapping
+            for(FileEntity fileEntity : fileRepository.findAllById(techPostRepository.getTechPostIdList())){
+                fileEntity.setTechPostEntity(techPostEntity);
+                fileRepository.save(fileEntity);
+            }
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
@@ -152,5 +162,27 @@ public class TechServiceImpl {
             techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
         }
         return techPostSkillTagMappingEntities;
+    }
+
+    public ResponseEntity<List<TechImgRes>> createImg(List<MultipartFile> multipartFileList) {
+        List<TechImgRes> techImgResList = new ArrayList<>();
+        try{
+            for(MultipartFile multipartFile : multipartFileList)
+            {
+                UUID uuid = UUID.randomUUID();
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(multipartFile.getContentType());
+                metadata.setContentLength(multipartFile.getSize());
+                amazonS3Client.putObject(bucket, pathImg + uuid, multipartFile.getInputStream(), metadata);
+                FileEntity fileEntity = new FileEntity(uuid.toString());
+                fileRepository.save(fileEntity);
+                techImgResList.add(new TechImgRes(fileEntity.getId(), path + pathImg + uuid));
+            }
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
     }
 }
