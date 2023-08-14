@@ -19,7 +19,13 @@ public class TechExceptionHandler extends GlobalExceptionHandler {
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<String> TechIOExceptionHandler(){
-        log.info("TechIOExceptionHandler: {}", this.getClass());
+        log.error("TechIOExceptionHandler: {}", this.getClass());
         return new ResponseEntity<>("S3 파일 업로드 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> TechIllegalStateHandler(){
+        log.error("TechIllegalStateHandler: {}", this.getClass());
+        return new ResponseEntity<>("잘못된 인자가 전달되었습니다.", HttpStatus.BAD_REQUEST);
     }
 }
