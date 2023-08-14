@@ -1,6 +1,6 @@
 package cobo.blog.global.Data.Entity;
 
-import lombok.Builder;
+import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -44,5 +44,11 @@ public class TechPostEntity {
         this.user = user;
         this.createdAt = Date.from(Instant.now());
         this.viewCount = 0L;
+    }
+
+    public void UpdateByTechTechPostReqAndUrl(TechTechPostReq techTechPostReq, String url){
+        this.title = techTechPostReq.getTitle();
+        this.content = techTechPostReq.getContent();
+        this.url = url;
     }
 }

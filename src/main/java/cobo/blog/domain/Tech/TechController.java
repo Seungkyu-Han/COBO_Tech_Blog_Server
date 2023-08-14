@@ -94,6 +94,16 @@ public class TechController {
         return techService.createPost(techTechPostReq, multipartFile);
     }
 
-
-
+    @PatchMapping("/post")
+    @ApiOperation(
+            value = "techPost를 수정하는 API",
+            notes = "이것도 일단 대충 만들어봄",
+            response = HttpStatus.class
+    )
+    public ResponseEntity<HttpStatus> updatePost(
+            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
+            @RequestPart(value = "multipartFile") MultipartFile multipartFile
+    ){
+        return techService.updatePost(techTechPostReq, multipartFile);
+    }
 }

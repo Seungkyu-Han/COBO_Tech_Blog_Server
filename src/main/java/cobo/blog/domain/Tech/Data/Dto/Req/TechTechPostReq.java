@@ -1,6 +1,5 @@
 package cobo.blog.domain.Tech.Data.Dto.Req;
 
-import cobo.blog.global.Data.Entity.SkillTagEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TechTechPostReq {
 
+    private Integer techPostId;
     private Integer userId;
     private String title;
     private String content;

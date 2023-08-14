@@ -97,22 +97,54 @@ public class TechServiceImpl {
                     );
 
             //Mapping 데이터 추가
-            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = new ArrayList<>();
-            for(SkillTagEntity skillTagEntity : skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList())){
-                TechPostSkillTagMappingEntity techPostSkillTagMappingEntity = new TechPostSkillTagMappingEntity(
-                        techPostEntity, skillTagEntity);
-                techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
-            }
+            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
             techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
 
             techPostRepository.save(techPostEntity);
 
             redisTemplate.opsForValue().set(redisName + techPostEntity.getId(), "0");
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq, MultipartFile multipartFile) {
+        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechPostReq.getTechPostId());
+        amazonS3Client.deleteObject(bucket, techPostEntity.getUrl());
+        try{
+            //S3에 데이터 업로드
+            UUID uuidName = UUID.randomUUID();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(multipartFile.getContentType());
+            metadata.setContentLength(multipartFile.getSize());
+            amazonS3Client.putObject(bucket,pathMd + uuidName, multipartFile.getInputStream(), metadata);
+
+            techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq, path + uuidName);
+
+            List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = skillTagMapping(techTechPostReq, techPostEntity);
+            techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
+
+            techPostRepository.save(techPostEntity);
+
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private List<TechPostSkillTagMappingEntity> skillTagMapping(TechTechPostReq techTechPostReq, TechPostEntity techPostEntity){
+        List<TechPostSkillTagMappingEntity> techPostSkillTagMappingEntities = new ArrayList<>();
+        for(SkillTagEntity skillTagEntity : skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList())){
+            TechPostSkillTagMappingEntity techPostSkillTagMappingEntity = new TechPostSkillTagMappingEntity(
+                    techPostEntity, skillTagEntity);
+            techPostSkillTagMappingEntities.add(techPostSkillTagMappingEntity);
+        }
+        techPostEntity.setTechPostSkillTagMappings(techPostSkillTagMappingEntities);
+        return techPostSkillTagMappingEntities;
     }
 }
