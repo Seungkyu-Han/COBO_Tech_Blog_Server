@@ -1,6 +1,7 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Req.TechTechUpdateReq;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostDetailRes;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -112,7 +114,11 @@ public class TechServiceImpl {
     public ResponseEntity<TechTechPostDetailRes> readPost(Integer techPostId) throws IOException {
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
-        return new ResponseEntity<>(new TechTechPostDetailRes(techPostEntity, getStringFromS3(techPostEntity.getFileName())), HttpStatus.OK);
+        HashMap<Integer, String> fileIdUrlMap = new HashMap<>();
+        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
+            fileIdUrlMap.put(fileEntity.getId(), path + fileEntity.getFileName());
+        return new ResponseEntity<>(
+                new TechTechPostDetailRes(techPostEntity, getStringFromS3(techPostEntity.getFileName()), fileIdUrlMap), HttpStatus.OK);
     }
 
     /**
@@ -151,23 +157,24 @@ public class TechServiceImpl {
 
     /**
      * 작성한 글을 수정하는 메서드(수정 예정)
-     * @param techTechPostReq techPostDto
+     * @param techTechUpdateReq update 요청하는 dto
      * @return ResponseEntity<HttpStatus>
+     * @Author  Seungkyu-Han
      */
     @Transactional
-    public ResponseEntity<HttpStatus> updatePost(TechTechPostReq techTechPostReq){
+    public ResponseEntity<HttpStatus> updatePost(TechTechUpdateReq techTechUpdateReq){
 
-        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechPostReq.getTechPostId());
+        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechUpdateReq.getTechPostId());
 
         techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
-
         amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
+        deleteImg(techTechUpdateReq.getDeleteFileIdList());
 
-        String uuidName = uploadStringToS3(techTechPostReq.getDetail());
+        String uuidName = uploadStringToS3(techTechUpdateReq.getDetail());
 
-        techPostEntity.UpdateByTechTechPostReqAndUrl(techTechPostReq,uuidName);
+        techPostEntity.UpdateByTechTechPostReqAndUrl(techTechUpdateReq,uuidName);
 
-        skillTagMapping(skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList()), techPostEntity);
+        skillTagMapping(skillTagRepository.getSkillTagEntitiesByIdList(techTechUpdateReq.getSkillTagIdList()), techPostEntity);
 
         techPostRepository.save(techPostEntity);
 
@@ -184,7 +191,7 @@ public class TechServiceImpl {
     public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
         for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
-            amazonS3Client.deleteObject(bucket, pathImg + fileEntity.getFileName());
+            amazonS3Client.deleteObject(bucket, fileEntity.getFileName());
         fileRepository.deleteAllByTechPost(techPostEntity);
         amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
         techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
@@ -226,7 +233,18 @@ public class TechServiceImpl {
             techImgResList.add(new TechImgRes(fileEntity.getId(), uuidName));
         }
         return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
+    }
 
+    /**
+     * S3에 업로드 한 이미지를 삭제하는 메서드
+     * @param fileIdList 삭제할 이미지들의 Id List
+     * @Author Seungkyu-Han
+     */
+    private void deleteImg(List<Integer> fileIdList) {
+        List<FileEntity> fileEntities = fileRepository.findAllById(fileIdList);
+        for(FileEntity fileEntity : fileEntities)
+            amazonS3Client.deleteObject(bucket,fileEntity.getFileName());
+        fileRepository.deleteAllById(fileIdList);
     }
 
     /**

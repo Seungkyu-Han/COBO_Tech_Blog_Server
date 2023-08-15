@@ -8,13 +8,14 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class TechTechPostReq {
+public class TechTechUpdateReq {
 
     @ApiModelProperty(
-            value = "작성한 유저의 UserID(아마 후에 로그인 기능 생성시 삭제 예정, POST 메서드만 사용)",
-            example = "4"
+            value = "수정할 techPost ID",
+            example = "12"
     )
-    private Integer userId;
+    private Integer techPostId;
+
     @ApiModelProperty(
             value = "작성할 글의 제목",
             example = "대충 무슨무슨 글입니다."
@@ -42,4 +43,10 @@ public class TechTechPostReq {
             example = "안녕하세요~~"
     )
     private String detail;
+
+    @ApiModelProperty(
+            value = "삭제할 이미지 파일들의 ID List",
+            example = "[1, 2, 3]"
+    )
+    private List<Integer> deleteFileIdList;
 }

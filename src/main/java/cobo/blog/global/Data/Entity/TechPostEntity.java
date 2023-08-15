@@ -1,6 +1,7 @@
 package cobo.blog.global.Data.Entity;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Req.TechTechUpdateReq;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -49,9 +50,9 @@ public class TechPostEntity {
         this.viewCount = 0L;
     }
 
-    public void UpdateByTechTechPostReqAndUrl(TechTechPostReq techTechPostReq, String fileName){
-        this.title = techTechPostReq.getTitle();
-        this.content = techTechPostReq.getContent();
+    public void UpdateByTechTechPostReqAndUrl(TechTechUpdateReq techTechUpdateReq, String fileName){
+        this.title = techTechUpdateReq.getTitle();
+        this.content = techTechUpdateReq.getContent();
         this.fileName = fileName;
     }
 }
