@@ -41,4 +41,10 @@ public class TechTechPostReq {
             example = "[5, 6, 7]"
     )
     private List<Integer> fileIdList;
+
+    @ApiModelProperty(
+            value = "저장할 글의 전체 내용",
+            example = "안녕하세요~~"
+    )
+    private String detail;
 }

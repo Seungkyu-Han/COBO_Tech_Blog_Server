@@ -3,6 +3,7 @@ package cobo.blog.domain.Tech;
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
+import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostDetailRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,7 @@ public class TechController {
     @GetMapping("/posts")
     @ApiOperation(
             value = "Tech Post 의 정보를 List 응답",
-            notes = "페이지 1부터 시작합니다, 주의 부탁드립니다.\n" +
-                    "skillTagId에 값이 없으면 모두 조회, 있으면 그 skillTagId로 조회",
+            notes = "skillTagId에 값이 0이면 모두 조회, 있으면 그 skillTagId로 조회",
             response = TechTechPostRes.class
     )
     @ApiImplicitParams({
@@ -40,21 +40,21 @@ public class TechController {
     public ResponseEntity<List<TechTechPostRes>> getPosts(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam(value = "skillTagId", required = false) Integer skillTagId){
+            @RequestParam(value = "skillTagId") Integer skillTagId){
         return techService.getPosts(page, size, skillTagId);
     }
 
     @GetMapping("/count")
     @ApiOperation(
             value = "tech의 개수를 가져오는 API",
-            notes = "이건 그냥 숫자로 바로 때리겠습니다.",
+            notes = "0이면 모든 techPost 개수 조회",
             response = Integer.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
     public ResponseEntity<Long> getProjectCount(
-            @RequestParam(name = "skillTagId", required = false) Integer skillTagId
+            @RequestParam(name = "skillTagId") Integer skillTagId
     ){
         return techService.getTechCount(skillTagId);
     }
@@ -74,14 +74,14 @@ public class TechController {
     @ApiOperation(
             value = "post의 내용을 가져오는 API",
             notes = "id로 검색합니다.",
-            response = TechTechPostRes.class
+            response = TechTechPostDetailRes.class
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
-    public ResponseEntity<TechTechPostRes> readPost(
+    public ResponseEntity<TechTechPostDetailRes> readPost(
             @RequestParam("techPostId") Integer techPostId
-    ){
+    )throws IOException{
         return techService.readPost(techPostId);
     }
 
@@ -92,9 +92,8 @@ public class TechController {
             response = HttpStatus.class
     )
     public ResponseEntity<HttpStatus> createPost(
-            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
-            @RequestPart(value = "multipartFile") MultipartFile multipartFile) throws IOException {
-        return techService.createPost(techTechPostReq, multipartFile);
+            @RequestBody TechTechPostReq techTechPostReq){
+        return techService.createPost(techTechPostReq);
     }
 
     @PatchMapping("/post")
@@ -104,10 +103,9 @@ public class TechController {
             response = HttpStatus.class
     )
     public ResponseEntity<HttpStatus> updatePost(
-            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq,
-            @RequestPart(value = "multipartFile") MultipartFile multipartFile
-    )throws IOException{
-        return techService.updatePost(techTechPostReq, multipartFile);
+            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq
+    ){
+        return techService.updatePost(techTechPostReq);
     }
 
     @DeleteMapping("/post")
