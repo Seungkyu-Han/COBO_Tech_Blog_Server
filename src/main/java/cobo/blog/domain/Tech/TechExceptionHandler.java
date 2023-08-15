@@ -38,6 +38,6 @@ public class TechExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(AmazonS3Exception.class)
     public ResponseEntity<String> TechAmazonS3ExceptionHandler(){
         log.error("TechAmazonS3ExceptionHandler: {}", this.getClass());
-        return new ResponseEntity<>("아마존 S3 접근 과정에서 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("S3 접근 과정에서 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
