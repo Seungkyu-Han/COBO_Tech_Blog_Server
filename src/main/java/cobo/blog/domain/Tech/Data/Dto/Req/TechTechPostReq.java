@@ -12,12 +12,12 @@ public class TechTechPostReq {
 
     @ApiModelProperty(
             value = "수정할 techPost ID(PATCH 메서드만 사용합니다, POST 메서드에서는 비워주세요)",
-            example = "12"
+            example = "12(PATCH에서만 사용해주세요)"
     )
     private Integer techPostId;
     @ApiModelProperty(
             value = "작성한 유저의 UserID(아마 후에 로그인 기능 생성시 삭제 예정, POST 메서드만 사용)",
-            example = "4"
+            example = "4(POST만 사용해주세요)"
     )
     private Integer userId;
     @ApiModelProperty(
