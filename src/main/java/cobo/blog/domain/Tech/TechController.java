@@ -1,6 +1,7 @@
 package cobo.blog.domain.Tech;
 
 import cobo.blog.domain.Tech.Data.Dto.Req.TechTechPostReq;
+import cobo.blog.domain.Tech.Data.Dto.Req.TechTechUpdateReq;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostDetailRes;
@@ -103,9 +104,9 @@ public class TechController {
             response = HttpStatus.class
     )
     public ResponseEntity<HttpStatus> updatePost(
-            @ModelAttribute(value = "techTechPostReq") TechTechPostReq techTechPostReq
+            @RequestBody TechTechUpdateReq techTechUpdateReq
     ){
-        return techService.updatePost(techTechPostReq);
+        return techService.updatePost(techTechUpdateReq);
     }
 
     @DeleteMapping("/post")
