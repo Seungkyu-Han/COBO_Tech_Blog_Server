@@ -115,10 +115,14 @@ public class TechServiceImpl {
         TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
         HashMap<Integer, String> fileIdUrlMap = new HashMap<>();
+        HashMap<String, Integer> fileUrlIdMap = new HashMap<>();
         for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
+        {
             fileIdUrlMap.put(fileEntity.getId(), path + fileEntity.getFileName());
+            fileUrlIdMap.put(path + fileEntity.getFileName(), fileEntity.getId());
+        }
         return new ResponseEntity<>(
-                new TechTechPostDetailRes(techPostEntity, getStringFromS3(techPostEntity.getFileName()), fileIdUrlMap), HttpStatus.OK);
+                new TechTechPostDetailRes(techPostEntity, getStringFromS3(techPostEntity.getFileName()), fileIdUrlMap, fileUrlIdMap), HttpStatus.OK);
     }
 
     /**
