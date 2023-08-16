@@ -198,6 +198,7 @@ public class TechServiceImpl {
             amazonS3Client.deleteObject(bucket, fileEntity.getFileName());
         fileRepository.deleteAllByTechPost(techPostEntity);
         amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
+        redisTemplate.delete("techPost" + techPostId);
         techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
         return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
     }
