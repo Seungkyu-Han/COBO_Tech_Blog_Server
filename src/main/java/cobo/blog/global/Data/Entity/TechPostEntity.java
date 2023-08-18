@@ -26,6 +26,7 @@ public class TechPostEntity {
     @CreatedDate
     private Date createdAt;
 
+    @Column(length = 400)
     private String content;
 
     private String fileName;

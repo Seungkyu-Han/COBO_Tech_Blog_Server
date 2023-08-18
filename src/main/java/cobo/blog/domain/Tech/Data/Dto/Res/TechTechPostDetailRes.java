@@ -42,7 +42,12 @@ public class TechTechPostDetailRes {
     )
     private HashMap<Integer, String> fileIdUrlMap;
 
-    public TechTechPostDetailRes(TechPostEntity techPostEntity, String detail, HashMap<Integer, String> fileIdUrlMap){
+    @ApiModelProperty(
+            value = "파일의 url과 id를 key value로 이거랑 <id, url> 중에서 쓰기 편한거만 남기고 삭제할 예정"
+    )
+    private HashMap<String, Integer> fileUrlIdMap;
+
+    public TechTechPostDetailRes(TechPostEntity techPostEntity, String detail, HashMap<Integer, String> fileIdUrlMap, HashMap<String, Integer> fileUrlIdMap){
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.title = techPostEntity.getTitle();
         this.createdAt = DateConversion.DateToString(techPostEntity.getCreatedAt());
@@ -51,5 +56,6 @@ public class TechTechPostDetailRes {
             this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
         this.detail = detail;
         this.fileIdUrlMap = fileIdUrlMap;
+        this.fileUrlIdMap = fileUrlIdMap;
     }
 }

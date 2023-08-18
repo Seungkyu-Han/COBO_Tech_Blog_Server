@@ -25,6 +25,8 @@ public class UserEntity {
 
     private String description;
 
+    private Integer kakaoId;
+
     @Enumerated(EnumType.STRING)
     private PositionEnum position;
 
