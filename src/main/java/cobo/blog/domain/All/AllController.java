@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.AllHitRes;
+import cobo.blog.domain.All.Data.Exception.NotUserException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -38,8 +39,7 @@ public class AllController {
 
     @ResponseBody
     @GetMapping("/login")
-    public void kakaoLogin(@RequestParam String code) throws IOException {
-        System.out.println(code);
-//        System.out.println(allService.getKakaoAccessToken(code));
+    public void kakaoLogin(@RequestParam String code) throws IOException, NotUserException {
+        allService.getKakaoUserInfo(allService.getKakaoAccessToken(code));
     }
 }
