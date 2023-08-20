@@ -7,7 +7,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -39,7 +41,20 @@ public class AllController {
 
     @ResponseBody
     @GetMapping("/login")
-    public void kakaoLogin(@RequestParam String code) throws IOException, NotUserException {
-        allService.getKakaoUserInfo(allService.getKakaoAccessToken(code));
+    public ResponseEntity<Integer> login(@RequestParam String code, HttpServletResponse httpServletResponse) throws IOException, NotUserException {
+        return allService.login(code, httpServletResponse);
     }
+    @DeleteMapping("/login")
+    public ResponseEntity<HttpStatus> logout(
+            @ApiIgnore Authentication authentication,
+            HttpServletResponse httpServletResponse
+            ){
+        return allService.logout(authentication, httpServletResponse);
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<String> check(){
+        return allService.check();
+    }
+
 }

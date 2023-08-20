@@ -2,8 +2,9 @@ package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.AllHitRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
-import cobo.blog.domain.All.Data.Exception.NotUserException;
+import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
+import cobo.blog.global.Util.CookieUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Objects;
+
+import static cobo.blog.global.Util.CookieUtil.createCookie;
+import static cobo.blog.global.Util.CookieUtil.deleteCookie;
 
 @Service
 @Slf4j
@@ -32,8 +38,12 @@ public class AllServiceImpl {
     private String client_id;
     @Value("${kakao.auth.redirect_uri}")
     private String redirect_uri;
+    @Value("${jwt.secret.key}")
+    private String secretKey;
 
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+
 
     @Transactional
     public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
@@ -47,9 +57,38 @@ public class AllServiceImpl {
         return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
     }
 
-    public String getKakaoAccessToken(String code) throws IOException {
+    public ResponseEntity<Integer> login(String code, HttpServletResponse httpServletResponse) throws IOException{
+
+        Integer userId = getKakaoUserIdByKakaoAccessToken(getKakaoAccessToken(code));
+
+        String accessToken = jwtTokenProvider.createAccessToken(userId, secretKey);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId, secretKey);
+
+        createCookie("AccessToken", accessToken, Duration.ofHours(2).toSeconds(), httpServletResponse);
+        createCookie("RefreshToken", refreshToken, Duration.ofDays(14).toSeconds(), httpServletResponse);
+
+        redisTemplate.opsForValue().set("RefreshToken" + userId, refreshToken);
+
+        return new ResponseEntity<>(userId, HttpStatus.OK);
+    }
+
+    public ResponseEntity<HttpStatus> logout(Authentication authentication, HttpServletResponse httpServletResponse) {
+        String userId = authentication.getName();
+        redisTemplate.delete("RefreshToken" + userId);
+
+        deleteCookie("AccessToken", httpServletResponse);
+        deleteCookie("RefreshToken", httpServletResponse);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<String> check() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private String getKakaoAccessToken(String code) throws IOException {
         String access_token;
-        String refresh_token;
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
         URL url = new URL(reqURL);
@@ -67,31 +106,24 @@ public class AllServiceImpl {
         bufferedWriter.flush();
 
 
-        log.info(httpURLConnection.getURL().toString());
-        int responseCode = httpURLConnection.getResponseCode();
-        log.info("responseCode : {}", responseCode);
-
+        httpURLConnection.getResponseCode();
 
         JsonElement element = getJsonElement(httpURLConnection);
 
         access_token = element.getAsJsonObject().get("access_token").getAsString();
-        refresh_token = element.getAsJsonObject().get("refresh_token").getAsString();
 
         bufferedWriter.close();
 
         return access_token;
     }
 
-    public void getKakaoUserInfo(String token) throws IOException, NotUserException {
+    private Integer getKakaoUserIdByKakaoAccessToken(String token) throws IOException {
         JsonElement element = getJsonElementByAccessToken(token);
-        int id = element.getAsJsonObject().get("id").getAsInt();
+        Integer id = element.getAsJsonObject().get("id").getAsInt();
 
         log.info("로그인 시도하는 유저의 KAKAO ID : {}", id);
 
-        if(!userRepository.existsByKakaoId(id))
-            throw new NotUserException("허용된 유저가 아닙니다.");
-
-
+        return userRepository.findByKakaoId(id).getId();
     }
 
     private JsonElement getJsonElementByAccessToken(String token) throws IOException {
@@ -133,4 +165,6 @@ public class AllServiceImpl {
 
         return JsonParser.parseString(result.toString());
     }
+
+
 }

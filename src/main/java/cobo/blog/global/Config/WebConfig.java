@@ -1,4 +1,4 @@
-package cobo.blog.global.Config.Web;
+package cobo.blog.global.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
