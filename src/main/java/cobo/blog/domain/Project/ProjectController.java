@@ -1,7 +1,7 @@
 package cobo.blog.domain.Project;
 
-import cobo.blog.domain.Project.Data.Dto.ProjectProjectCardRes;
-import cobo.blog.domain.Project.Data.Dto.ProjectProjectRes;
+import cobo.blog.domain.Project.Data.Dto.Res.ProjectProjectCardRes;
+import cobo.blog.domain.Project.Data.Dto.Res.ProjectProjectRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class ProjectController {
     @ApiOperation(
             value = "Project card 내용을 가져오는 API",
             notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
-            response = TechTechPostRes.class
+            response = ProjectProjectCardRes.class
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1", required = true),
@@ -57,7 +57,7 @@ public class ProjectController {
     @ApiOperation(
             value = "Project 내용을 가져오는 API",
             notes = "어렵네",
-            response = TechTechPostRes.class
+            response = ProjectProjectRes.class
     )
     @ApiImplicitParams(
             @ApiImplicitParam(name = "projectId", value = "프로젝트의 id", example = "1", required = true)

@@ -16,6 +16,10 @@ public class SkillTagEntity {
 
     private String name;
 
+    private String color;
+
+    private Boolean isBlack;
+
     @OneToMany(mappedBy = "skillTag")
     private List<ProjectSkillTagMappingEntity> projectSkillTagMappings;
 

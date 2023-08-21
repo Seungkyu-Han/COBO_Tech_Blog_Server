@@ -1,4 +1,4 @@
-package cobo.blog.domain.Project.Data.Dto;
+package cobo.blog.domain.Project.Data.Dto.Res;
 
 import cobo.blog.global.Data.Entity.*;
 import cobo.blog.global.Util.DateConversion;
@@ -37,7 +37,7 @@ public class ProjectProjectCardRes {
             value = "프로젝트에 사용한 기술들",
             example = "SpringBoot"
     )
-    private List<String> skillTags;
+    private List<SkillTagInProjectProjectCardRes> skillTags;
     @ApiModelProperty(
             value = "간단한 소개",
             example = "이 프로젝트는 블로그를 제작한 프로젝트입니다."
@@ -55,6 +55,6 @@ public class ProjectProjectCardRes {
         for(ProjectUserMappingEntity projectUserMappingEntity : projectEntity.getProjectUserMappings())
             this.users.add(new UserInProjectRes(projectUserMappingEntity.getUser()));
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : projectEntity.getProjectSkillTagMappings())
-            this.skillTags.add(projectSkillTagMappingEntity.getSkillTag().getName());
+            this.skillTags.add(new SkillTagInProjectProjectCardRes(projectSkillTagMappingEntity.getSkillTag()));
     }
 }

@@ -1,4 +1,4 @@
-package cobo.blog.domain.Project.Data.Dto;
+package cobo.blog.domain.Project.Data.Dto.Res;
 
 import cobo.blog.global.Data.Entity.UserEntity;
 import io.swagger.annotations.ApiModelProperty;
