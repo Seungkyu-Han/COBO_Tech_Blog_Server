@@ -22,13 +22,7 @@ public class HomeProjectRes {
             example = "블로그 개발 프로젝트"
     )
     private String title;
-
-    @ApiModelProperty(
-            value = "프로필에 사용된 스킬들을 문자열",
-            dataType = "List",
-            example = "[\"SpringBoot\", \"JavaScript\", \"MySQL\"]"
-    )
-    private List<String> skillTag;
+    private List<SkillTagInHomeProjectRes> skillTag;
 
     @ApiModelProperty(
             value = "해당 project의 간단한 소개",
@@ -47,8 +41,9 @@ public class HomeProjectRes {
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();
         this.description = project.getDescription();
+        this.skillTag = new ArrayList<>();
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : project.getProjectSkillTagMappings())
-            skillTag.add(projectSkillTagMappingEntity.getSkillTag().getName());
+            skillTag.add(new SkillTagInHomeProjectRes(projectSkillTagMappingEntity.getSkillTag()));
         this.url = project.getUrl();
     }
 }

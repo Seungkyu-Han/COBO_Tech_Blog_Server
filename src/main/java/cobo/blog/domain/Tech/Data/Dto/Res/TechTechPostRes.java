@@ -32,7 +32,7 @@ public class TechTechPostRes {
             value = "TechPost 사용된 SkillTag 이름들",
             example = "SpringBoot"
     )
-    private List<String> skillTag;
+    private List<SkillTagInTechTechPostRes> skillTags;
     @ApiModelProperty(
             value = "TechPost 내용 앞부분",
             example = "성능테스트를 진행한 결과 응답 속도가 느린 문제가 있었습니다."
@@ -57,9 +57,9 @@ public class TechTechPostRes {
         this.title = techPostEntity.getTitle();
         this.createdAt = DateConversion.DateToString(techPostEntity.getCreatedAt());
         this.content = techPostEntity.getContent();
-        this.skillTag = new ArrayList<>();
+        this.skillTags = new ArrayList<>();
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
-            this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
+            this.skillTags.add(new SkillTagInTechTechPostRes(techPostSkillTagMappingEntity.getSkillTag()));
         this.url = path + techPostEntity.getFileName();
         this.viewCount = techPostEntity.getViewCount();
     }
