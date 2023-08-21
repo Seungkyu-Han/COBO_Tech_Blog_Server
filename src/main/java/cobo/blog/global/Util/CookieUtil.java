@@ -9,6 +9,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge.intValue());
         cookie.setPath("/");
+        cookie.setDomain("http://3.36.168.6/");
         httpServletResponse.addCookie(cookie);
     }
 
