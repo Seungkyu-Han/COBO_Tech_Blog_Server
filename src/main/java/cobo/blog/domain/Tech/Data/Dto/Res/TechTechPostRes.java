@@ -29,7 +29,7 @@ public class TechTechPostRes {
     )
     private String createdAt;
     @ApiModelProperty(
-            value = "TechPost 사용된 SkillTag 이름들",
+            value = "TechPost 사용된 SkillTag들",
             example = "SpringBoot"
     )
     private List<SkillTagInTechTechPostRes> skillTags;
