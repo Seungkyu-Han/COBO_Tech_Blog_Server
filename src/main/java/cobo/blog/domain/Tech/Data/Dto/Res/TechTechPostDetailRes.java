@@ -26,10 +26,10 @@ public class TechTechPostDetailRes {
     )
     private String createdAt;
     @ApiModelProperty(
-            value = "TechPost 사용된 SkillTag 이름들",
+            value = "TechPost 사용된 SkillTag들",
             example = "SpringBoot"
     )
-    private List<String> skillTag;
+    private List<SkillTagInTechTechPostRes> skillTags;
 
     @ApiModelProperty(
             value = "해당 TechPost 내용",
@@ -51,9 +51,9 @@ public class TechTechPostDetailRes {
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.title = techPostEntity.getTitle();
         this.createdAt = DateConversion.DateToString(techPostEntity.getCreatedAt());
-        this.skillTag = new ArrayList<>();
+        this.skillTags = new ArrayList<>();
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
-            this.skillTag.add(techPostSkillTagMappingEntity.getSkillTag().getName());
+            this.skillTags.add(new SkillTagInTechTechPostRes(techPostSkillTagMappingEntity.getSkillTag()));
         this.detail = detail;
         this.fileIdUrlMap = fileIdUrlMap;
         this.fileUrlIdMap = fileUrlIdMap;
