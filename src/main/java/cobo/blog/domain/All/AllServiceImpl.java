@@ -4,7 +4,6 @@ import cobo.blog.domain.All.Data.Dto.AllHitRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
-import cobo.blog.global.Util.CookieUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -46,15 +46,24 @@ public class AllServiceImpl {
 
 
     @Transactional
-    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
+    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletRequest httpServletRequest){
 
+        for(Cookie cookie : httpServletRequest.getCookies())
+            log.info("cookie 이름: {}", cookie.getName());
 
-        if(hitCookie == 0) IncrementTodayAndSetCookie(httpServletResponse);
+        log.info("cookie: {}", hitCookie);
+
+        boolean isCookie = false;
+
+        if(hitCookie == 0) {
+            IncrementToday();
+            isCookie = true;
+        }
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
-        return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
+        return new ResponseEntity<>(new AllHitRes(today, today + total, isCookie), HttpStatus.OK);
     }
 
     public ResponseEntity<Integer> login(String code, HttpServletResponse httpServletResponse) throws IOException{
@@ -143,13 +152,8 @@ public class AllServiceImpl {
     }
 
 
-    private void IncrementTodayAndSetCookie(HttpServletResponse httpServletResponse){
+    private void IncrementToday(){
         redisTemplate.opsForValue().increment("today");
-
-        Cookie cookie = new Cookie("hitCookie", "1");
-        cookie.setMaxAge(900);
-        cookie.setPath("/");
-        httpServletResponse.addCookie(cookie);
     }
 
     private JsonElement getJsonElement(HttpURLConnection httpURLConnection) throws IOException {

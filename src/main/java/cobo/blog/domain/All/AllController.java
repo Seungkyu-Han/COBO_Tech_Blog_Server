@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -35,8 +36,9 @@ public class AllController {
     })
     public ResponseEntity<AllHitRes> hit(
             @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
-            HttpServletResponse httpServletResponse){
-        return allService.getHit(hitCookie, httpServletResponse);
+            HttpServletRequest httpServletRequest
+    ){
+        return allService.getHit(hitCookie, httpServletRequest);
     }
 
     @ResponseBody
