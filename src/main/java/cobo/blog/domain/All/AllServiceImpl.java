@@ -48,8 +48,11 @@ public class AllServiceImpl {
     @Transactional
     public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletRequest httpServletRequest){
 
-        for(Cookie cookie : httpServletRequest.getCookies())
-            log.info("cookie 이름: {}", cookie.getName());
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if(cookies != null){
+            for(Cookie cookie : httpServletRequest.getCookies())
+                log.info("cookie 이름: {}", cookie.getName());
+        }
 
         log.info("cookie: {}", hitCookie);
 
