@@ -19,4 +19,10 @@ public class AllHitRes {
             example = "1020303"
     )
     private Long total;
+
+    @ApiModelProperty(
+            value = "쿠키를 생성해야 하는 지 boolean",
+            notes = "true면 쿠키를 생성, false면 쿠키를 생성 X"
+    )
+    private boolean isCookie;
 }
