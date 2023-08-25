@@ -1,7 +1,6 @@
 package cobo.blog.domain.All;
 
-import cobo.blog.domain.All.Data.Dto.AllHitRes;
-import cobo.blog.domain.All.Data.Exception.NotUserException;
+import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -43,7 +41,7 @@ public class AllController {
 
     @ResponseBody
     @GetMapping("/login")
-    public ResponseEntity<Integer> login(@RequestParam String code, HttpServletResponse httpServletResponse) throws IOException, NotUserException {
+    public ResponseEntity<Integer> login(@RequestParam String code, HttpServletResponse httpServletResponse) throws IOException{
         return allService.login(code, httpServletResponse);
     }
     @DeleteMapping("/login")
