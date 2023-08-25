@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOrigins("https://team-cobo.site")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)
