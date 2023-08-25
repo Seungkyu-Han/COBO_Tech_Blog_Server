@@ -36,9 +36,9 @@ public class AllController {
     })
     public ResponseEntity<AllHitRes> hit(
             @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
-            HttpServletRequest httpServletRequest
+            HttpServletResponse httpServletResponse
     ){
-        return allService.getHit(hitCookie, httpServletRequest);
+        return allService.getHit(hitCookie, httpServletResponse);
     }
 
     @ResponseBody
