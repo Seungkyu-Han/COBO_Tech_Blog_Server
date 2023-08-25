@@ -4,6 +4,7 @@ import cobo.blog.domain.All.Data.Dto.AllHitRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
+import cobo.blog.global.Util.CookieUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -46,22 +47,11 @@ public class AllServiceImpl {
 
 
     @Transactional
-    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletRequest httpServletRequest){
-
-        Cookie[] cookies = httpServletRequest.getCookies();
-        if(cookies != null){
-            for(Cookie cookie : httpServletRequest.getCookies())
-                log.info("cookie 이름: {}", cookie.getName());
-        }
-
-        log.info("cookie: {}", hitCookie);
+    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
 
         boolean isCookie = false;
 
-        if(hitCookie == 0) {
-            IncrementToday();
-            isCookie = true;
-        }
+        if(hitCookie == 0) IncrementTodayAndAddCookie(httpServletResponse);
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
@@ -155,8 +145,9 @@ public class AllServiceImpl {
     }
 
 
-    private void IncrementToday(){
+    private void IncrementTodayAndAddCookie(HttpServletResponse httpServletResponse){
         redisTemplate.opsForValue().increment("today");
+        createCookie("hitCookie", "1", Duration.ofMinutes(15).toSeconds(), httpServletResponse);
     }
 
     private JsonElement getJsonElement(HttpURLConnection httpURLConnection) throws IOException {
