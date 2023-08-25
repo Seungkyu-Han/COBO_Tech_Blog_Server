@@ -9,7 +9,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge.intValue());
         cookie.setPath("/");
-        cookie.setDomain(".team-cobo.site");
+        cookie.setDomain("https://team-cobo.site");
         httpServletResponse.addCookie(cookie);
     }
 
