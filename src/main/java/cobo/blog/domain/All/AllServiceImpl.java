@@ -1,10 +1,9 @@
 package cobo.blog.domain.All;
 
-import cobo.blog.domain.All.Data.Dto.AllHitRes;
+import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
-import cobo.blog.global.Util.CookieUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -49,14 +46,12 @@ public class AllServiceImpl {
     @Transactional
     public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
 
-        boolean isCookie = false;
-
         if(hitCookie == 0) IncrementTodayAndAddCookie(httpServletResponse);
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
 
-        return new ResponseEntity<>(new AllHitRes(today, today + total, isCookie), HttpStatus.OK);
+        return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
     }
 
     public ResponseEntity<Integer> login(String code, HttpServletResponse httpServletResponse) throws IOException{
