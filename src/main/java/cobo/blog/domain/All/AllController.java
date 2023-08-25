@@ -33,7 +33,7 @@ public class AllController {
             @ApiResponse(code = 200, message = "응답 성공")
     })
     public ResponseEntity<AllHitRes> hit(
-            @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
+            @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0", required = false) Integer hitCookie,
             HttpServletResponse httpServletResponse
     ){
         return allService.getHit(hitCookie, httpServletResponse);
