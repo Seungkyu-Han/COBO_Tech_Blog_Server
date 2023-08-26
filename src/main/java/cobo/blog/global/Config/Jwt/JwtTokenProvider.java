@@ -22,12 +22,14 @@ public class JwtTokenProvider{
                 .getBody()
                 .get("userId", Integer.class);
     }
-    public boolean isRefreshToken(String token, String secretKey){
+
+    public boolean isAccessToken(String token, String secretKey){
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
-                .getHeader().get("type").toString().equals("refresh");
+                .getHeader().get("type").toString().equals("access");
     }
+
 
     public String createAccessToken(Integer userId, String secretKey){
         return createJwtToken(userId, secretKey, "access", accessTokenValidTime);

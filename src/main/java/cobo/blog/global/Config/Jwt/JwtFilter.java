@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,13 +12,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-
-import static cobo.blog.global.Util.CookieUtil.createCookie;
 
 @RequiredArgsConstructor
 @Component
@@ -28,56 +24,37 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Value("${jwt.secret.key}")
     private String secretKey;
-
-    private final RedisTemplate<String, String> redisTemplate;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
 
         if(!isAuthPath(request.getServletPath())){
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("auth: {}", request.getHeader(HttpHeaders.AUTHORIZATION));
-        String accessToken = getCookieValue(request, "AccessToken");
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if(authorization == null || !authorization.startsWith("Bearer "))
+            throw new IOException("Omg");
 
-        if(accessToken == null){
-            String refreshToken = getCookieValue(request, "RefreshToken");
-            if(refreshToken != null && jwtTokenProvider.isRefreshToken(refreshToken, secretKey)){
-                Integer userId = jwtTokenProvider.getUserId(refreshToken, secretKey);
-                if(refreshToken.equals(redisTemplate.opsForValue().get("RefreshToken" + userId))){
-                    createCookie("AccessToken", jwtTokenProvider.createAccessToken(userId, secretKey), 900L, response);
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
-            }
-        }
-        else{
-            Integer userId = jwtTokenProvider.getUserId(accessToken, secretKey);
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
+        String token = authorization.split(" ")[1];
 
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        }
+        if(!jwtTokenProvider.isAccessToken(token, secretKey))
+            throw new IOException("Not Access");
+
+        Integer userId = jwtTokenProvider.getUserId(token, secretKey);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
+
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
         filterChain.doFilter(request, response);
     }
 
     private boolean isAuthPath(String path){
         return path.startsWith("/api/all/check") ||
                 path.startsWith("/api/tech/post") ||
-                path.startsWith("/api/tech/img") ||
-                path.startsWith("/api/all/login");
-    }
-
-    private String getCookieValue(HttpServletRequest httpServletRequest, String name) {
-        if (httpServletRequest.getCookies() != null)
-            for (Cookie cookie : httpServletRequest.getCookies())
-                if (cookie.getName().equals(name))
-                    return cookie.getValue();
-        return null;
+                path.startsWith("/api/tech/img");
     }
 }
