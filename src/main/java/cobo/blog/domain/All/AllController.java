@@ -1,16 +1,12 @@
 package cobo.blog.domain.All;
 
+import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
@@ -52,12 +48,20 @@ public class AllController {
     public ResponseEntity<AllLoginRes> login(@RequestParam String code) throws IOException{
         return allService.login(code);
     }
-    @DeleteMapping("/login")
-    public ResponseEntity<HttpStatus> logout(
-            @ApiIgnore Authentication authentication,
-            HttpServletResponse httpServletResponse){
-        return allService.logout(authentication, httpServletResponse);
+
+    @ResponseBody
+    @PatchMapping("/login")
+    @ApiOperation(
+            value = "RefreshToken을 이용하여 AccessToken을 재발급한다.",
+            response = AllLoginRes.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답성공")
+    })
+    public ResponseEntity<AllLoginRes> login(@RequestBody AllPatchLoginReq allPatchLoginReq){
+        return allService.login(allPatchLoginReq);
     }
+
 
     @GetMapping("/check")
     public ResponseEntity<String> check(){

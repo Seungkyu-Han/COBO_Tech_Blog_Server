@@ -1,6 +1,5 @@
 package cobo.blog.global.Config.Jwt;
 
-import cobo.blog.global.Util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -36,13 +35,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("auth: {}", request.getHeader(HttpHeaders.AUTHORIZATION));
 
         if(!isAuthPath(request.getServletPath())){
             filterChain.doFilter(request, response);
             return;
         }
 
+        log.info("auth: {}", request.getHeader(HttpHeaders.AUTHORIZATION));
         String accessToken = getCookieValue(request, "AccessToken");
 
         if(accessToken == null){

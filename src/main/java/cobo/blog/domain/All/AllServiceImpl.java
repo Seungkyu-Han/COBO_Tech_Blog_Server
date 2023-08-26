@@ -1,5 +1,6 @@
 package cobo.blog.domain.All;
 
+import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
@@ -13,19 +14,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import static cobo.blog.global.Util.CookieUtil.createCookie;
-import static cobo.blog.global.Util.CookieUtil.deleteCookie;
 
 @Service
 @Slf4j
@@ -63,20 +60,19 @@ public class AllServiceImpl {
         String accessToken = jwtTokenProvider.createAccessToken(userId, secretKey);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId, secretKey);
 
-        redisTemplate.opsForValue().set("RefreshToken" + userId, refreshToken);
+        redisTemplate.opsForValue().set(refreshToken, userId.toString(), 14, TimeUnit.DAYS);
 
         return new ResponseEntity<>(new AllLoginRes(userId, accessToken, refreshToken), HttpStatus.OK);
     }
 
-    public ResponseEntity<HttpStatus> logout(Authentication authentication, HttpServletResponse httpServletResponse) {
-        String userId = authentication.getName();
-        redisTemplate.delete("RefreshToken" + userId);
+    public ResponseEntity<AllLoginRes> login(AllPatchLoginReq allPatchLoginReq) {
+        Integer userId = Integer.valueOf(Objects.requireNonNull(redisTemplate.opsForValue().get(allPatchLoginReq.getRefreshToken())));
 
-        deleteCookie("AccessToken", httpServletResponse);
-        deleteCookie("RefreshToken", httpServletResponse);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, secretKey);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(new AllLoginRes(userId, accessToken, allPatchLoginReq.getRefreshToken()), HttpStatus.OK);
     }
+
 
 
     public ResponseEntity<String> check() {
@@ -152,6 +148,7 @@ public class AllServiceImpl {
 
         return JsonParser.parseString(result.toString());
     }
+
 
 
 }
