@@ -45,7 +45,6 @@ public class SecurityConfig{
                 .antMatchers(HttpMethod.PATCH, "/api/tech/post").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/tech/post").authenticated()
                 .antMatchers("/api/tech/img").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/all/login").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .sessionManagement()
