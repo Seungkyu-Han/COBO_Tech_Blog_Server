@@ -44,9 +44,10 @@ public class AllServiceImpl {
 
 
     @Transactional
-    public ResponseEntity<AllHitRes> getHit(Integer hitCookie, HttpServletResponse httpServletResponse){
+    public ResponseEntity<AllHitRes> getHit(Boolean isCount){
 
-        if(hitCookie == 0) IncrementTodayAndAddCookie(httpServletResponse);
+        if(isCount)
+            redisTemplate.opsForValue().increment("today");
 
         Long today = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("today")));
         Long total = Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get("total")));
@@ -139,11 +140,6 @@ public class AllServiceImpl {
         return getJsonElement(httpURLConnection);
     }
 
-
-    private void IncrementTodayAndAddCookie(HttpServletResponse httpServletResponse){
-        redisTemplate.opsForValue().increment("today");
-        createCookie("hitCookie", "1", Duration.ofMinutes(15).toSeconds(), httpServletResponse);
-    }
 
     private JsonElement getJsonElement(HttpURLConnection httpURLConnection) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
