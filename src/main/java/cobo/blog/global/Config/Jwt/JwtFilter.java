@@ -18,7 +18,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 
 import static cobo.blog.global.Util.CookieUtil.createCookie;
@@ -37,12 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        Enumeration<String> headers = request.getHeaderNames();
         log.info("auth: {}", request.getHeader(HttpHeaders.AUTHORIZATION));
-        while (headers.hasMoreElements()) {
-            String headerName = headers.nextElement();
-            log.info("Header: {}, value : {}", headerName, request.getHeader(headerName));
-        }
 
         if(!isAuthPath(request.getServletPath())){
             filterChain.doFilter(request, response);
