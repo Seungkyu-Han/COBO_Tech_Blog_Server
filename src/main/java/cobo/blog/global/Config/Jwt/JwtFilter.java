@@ -40,6 +40,8 @@ public class JwtFilter extends OncePerRequestFilter {
         while (headers.hasMoreElements()) {
             String headerName = headers.nextElement();
             log.info("Header: {}", headerName);
+            if(headerName.equals("authorization") || headerName.equals("Authorization"))
+                log.debug("auth : {}", request.getHeader(headerName));
         }
 
         if(!isAuthPath(request.getServletPath())){
