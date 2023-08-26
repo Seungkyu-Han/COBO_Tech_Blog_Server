@@ -3,6 +3,7 @@ package cobo.blog.global.Config.Jwt;
 import cobo.blog.global.Util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         Enumeration<String> headers = request.getHeaderNames();
+        log.info("auth: {}", request.getHeader(HttpHeaders.AUTHORIZATION));
         while (headers.hasMoreElements()) {
             String headerName = headers.nextElement();
             log.info("Header: {}, value : {}", headerName, request.getHeader(headerName));
