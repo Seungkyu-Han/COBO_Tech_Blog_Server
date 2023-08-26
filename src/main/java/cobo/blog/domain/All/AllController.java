@@ -1,10 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +26,16 @@ public class AllController {
             notes = "today 오늘 조회수, total 전체 조회수(오늘 조회도 합친)",
             response = AllHitRes.class
     )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "isCount", value = "조회수를 증가해야 하는지 bool", example = "true", required = true)
+    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
     })
     public ResponseEntity<AllHitRes> hit(
-            @ApiIgnore @CookieValue(value = "hitCookie", defaultValue = "0") Integer hitCookie,
-            HttpServletResponse httpServletResponse
+            @RequestParam Boolean isCount
     ){
-        return allService.getHit(hitCookie, httpServletResponse);
+        return allService.getHit(isCount);
     }
 
     @ResponseBody
@@ -47,8 +46,7 @@ public class AllController {
     @DeleteMapping("/login")
     public ResponseEntity<HttpStatus> logout(
             @ApiIgnore Authentication authentication,
-            HttpServletResponse httpServletResponse
-            ){
+            HttpServletResponse httpServletResponse){
         return allService.logout(authentication, httpServletResponse);
     }
 
