@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
+import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,16 @@ public class AllController {
 
     @ResponseBody
     @GetMapping("/login")
-    public ResponseEntity<Integer> login(@RequestParam String code, HttpServletResponse httpServletResponse) throws IOException{
-        return allService.login(code, httpServletResponse);
+    @ApiOperation(
+            value = "로그인 후 AccessToken과 RefreshToken을 받아온다.",
+            notes = "추후 수정 가능",
+            response = AllLoginRes.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<AllLoginRes> login(@RequestParam String code) throws IOException{
+        return allService.login(code);
     }
     @DeleteMapping("/login")
     public ResponseEntity<HttpStatus> logout(

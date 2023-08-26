@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
+import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import cobo.blog.domain.All.Data.Exception.BadResponseException;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
@@ -55,19 +56,16 @@ public class AllServiceImpl {
         return new ResponseEntity<>(new AllHitRes(today, today + total), HttpStatus.OK);
     }
 
-    public ResponseEntity<Integer> login(String code, HttpServletResponse httpServletResponse) throws IOException{
+    public ResponseEntity<AllLoginRes> login(String code) throws IOException{
 
         Integer userId = getKakaoUserIdByKakaoAccessToken(getKakaoAccessToken(code));
 
         String accessToken = jwtTokenProvider.createAccessToken(userId, secretKey);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId, secretKey);
 
-        createCookie("AccessToken", accessToken, Duration.ofHours(2).toSeconds(), httpServletResponse);
-        createCookie("RefreshToken", refreshToken, Duration.ofDays(14).toSeconds(), httpServletResponse);
-
         redisTemplate.opsForValue().set("RefreshToken" + userId, refreshToken);
 
-        return new ResponseEntity<>(userId, HttpStatus.OK);
+        return new ResponseEntity<>(new AllLoginRes(userId, accessToken, refreshToken), HttpStatus.OK);
     }
 
     public ResponseEntity<HttpStatus> logout(Authentication authentication, HttpServletResponse httpServletResponse) {
