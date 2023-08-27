@@ -1,7 +1,5 @@
 package cobo.blog.domain.All;
 
-import cobo.blog.domain.All.Data.Exception.BadResponseException;
-import cobo.blog.domain.All.Data.Exception.NotUserException;
 import cobo.blog.global.Config.GlobalExceptionHandler;
 import io.lettuce.core.RedisCommandExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.net.ProtocolException;
 
 @Slf4j
@@ -50,15 +49,15 @@ public class AllExceptionHandler extends GlobalExceptionHandler {
         return new ResponseEntity<>("KAKAO URL 연결 중 에러가 발생했습니다", HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadResponseException.class)
-    public ResponseEntity<String> AllBadResponseExceptionHandler(){
-        log.error("AllBadResponseExceptionHandler : {}", this.getClass());
-        return new ResponseEntity<>("카카오 서버로 잘못된 Token을 요청랬습니다.", HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> AllIOExceptionHandler(){
+        log.error("AllIOExceptionHandler : {}", this.getClass());
+        return new ResponseEntity<>("해당 code로 카카오 인증에 실패했습니다.", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(NotUserException.class)
-    public ResponseEntity<String> AllNotUserExceptionHandler(){
-        log.error("AllNotUserExceptionHandler : {}", this.getClass());
-        return new ResponseEntity<>("허용된 사용자가 아닙니다.", HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> AllNullPointerExceptionHandler(){
+        log.error("AllNullPointerExceptionHandler : {}", this.getClass());
+        return new ResponseEntity<>("해당 RefreshToken이 존재하지 않습니다.", HttpStatus.FORBIDDEN);
     }
 }

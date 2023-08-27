@@ -5,6 +5,7 @@ import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
@@ -43,7 +44,8 @@ public class AllController {
             response = AllLoginRes.class
     )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "응답 성공")
+            @ApiResponse(code = 200, message = "응답 성공"),
+            @ApiResponse(code = 403, message = "유요하지 않은 code")
     })
     public ResponseEntity<AllLoginRes> login(@RequestParam String code) throws IOException{
         return allService.login(code);
@@ -56,7 +58,8 @@ public class AllController {
             response = AllLoginRes.class
     )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "응답성공")
+            @ApiResponse(code = 200, message = "응답성공"),
+            @ApiResponse(code = 403, message = "해당 RefreshToken이 서버에는 존재하지 않음")
     })
     public ResponseEntity<AllLoginRes> login(@RequestBody AllPatchLoginReq allPatchLoginReq){
         return allService.login(allPatchLoginReq);
@@ -64,7 +67,22 @@ public class AllController {
 
 
     @GetMapping("/check")
-    public ResponseEntity<String> check(){
+    @ApiOperation(
+            value = "현재 로그인이 되어있는지 체크하는 API",
+            notes = "Authorization 헤더에 AccessToken을 전송"
+
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "응답성공"),
+            @ApiResponse(code = 401, message = """
+                    Authorization 헤더가가 비어있음
+                    Authorization 헤더가 규격에 맞지 않음"""),
+            @ApiResponse(code = 403, message = """
+                    AccessToken이 아님
+                    해당 AccessToken으로 인증에 실패함
+                    """)
+    })
+    public ResponseEntity<HttpStatus> check(){
         return allService.check();
     }
 

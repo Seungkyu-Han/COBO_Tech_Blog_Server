@@ -3,6 +3,7 @@ package cobo.blog.global.Config.Jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ public class JwtTokenProvider{
                 .get("userId", Integer.class);
     }
 
-    public boolean isAccessToken(String token, String secretKey){
+    public boolean isAccessToken(String token, String secretKey) throws MalformedJwtException {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

@@ -1,5 +1,7 @@
 package cobo.blog.global.Config.Jwt;
 
+import cobo.blog.global.Config.Jwt.Exception.EmptyAuthorizationException;
+import cobo.blog.global.Config.Jwt.Exception.NotAuthorizationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -36,14 +38,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(authorization == null || !authorization.startsWith("Bearer "))
-            throw new IOException("Omg");
+            throw new EmptyAuthorizationException("Empty Authorization");
 
         String token = authorization.split(" ")[1];
 
         if(!jwtTokenProvider.isAccessToken(token, secretKey))
-            throw new IOException("Not Access");
+            throw new NotAuthorizationException("Not AccessToken");
 
         Integer userId = jwtTokenProvider.getUserId(token, secretKey);
+
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
 
