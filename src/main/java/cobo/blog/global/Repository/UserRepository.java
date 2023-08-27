@@ -14,7 +14,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     )
     UserEntity getById(Integer id);
 
-    boolean existsByKakaoId(Integer kakaoId);
 
     UserEntity findByKakaoId(Integer kakaoId);
 }

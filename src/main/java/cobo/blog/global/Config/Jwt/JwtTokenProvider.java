@@ -13,8 +13,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider{
 
-    private static final Long accessTokenValidTime = Duration.ofHours(1).toMillis();
-    private static final Long refreshTokenValidTime = Duration.ofDays(14).toMillis();
+    private static final Long accessTokenValidTime = Duration.ofHours(2).toMillis();
+    private static final Long refreshTokenValidTime = Duration.ofDays(7).toMillis();
 
     public Integer getUserId(String token, String secretKEy ){
         return Jwts.parser()
