@@ -3,7 +3,6 @@ package cobo.blog.domain.All;
 import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
-import cobo.blog.domain.All.Data.Exception.BadResponseException;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
 import cobo.blog.global.Repository.UserRepository;
 import com.google.gson.JsonElement;
@@ -73,9 +72,7 @@ public class AllServiceImpl {
         return new ResponseEntity<>(new AllLoginRes(userId, accessToken, allPatchLoginReq.getRefreshToken()), HttpStatus.OK);
     }
 
-
-
-    public ResponseEntity<String> check() {
+    public ResponseEntity<HttpStatus> check() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -128,9 +125,6 @@ public class AllServiceImpl {
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setRequestProperty("Authorization", "Bearer " + token);
 
-        if(httpURLConnection.getResponseCode() != 200)
-            throw new BadResponseException("카카오 서버로 잘못된 요청을 전송했습니다.");
-
         return getJsonElement(httpURLConnection);
     }
 
@@ -148,7 +142,5 @@ public class AllServiceImpl {
 
         return JsonParser.parseString(result.toString());
     }
-
-
 
 }
