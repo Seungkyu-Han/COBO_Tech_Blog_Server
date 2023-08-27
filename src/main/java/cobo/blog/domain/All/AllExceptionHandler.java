@@ -58,6 +58,6 @@ public class AllExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> AllNullPointerExceptionHandler(){
         log.error("AllNullPointerExceptionHandler : {}", this.getClass());
-        return new ResponseEntity<>("해당 RefreshToken이 존재하지 않습니다.", HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>("Request 한 데이터가 서버에 존재하지 않습니다.", HttpStatus.FORBIDDEN);
     }
 }

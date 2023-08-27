@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
+import cobo.blog.domain.All.Data.Dto.Res.AllGetUserRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
@@ -70,20 +71,26 @@ public class AllController {
     @ApiOperation(
             value = "현재 로그인이 되어있는지 체크하는 API",
             notes = "Authorization 헤더에 AccessToken을 전송"
-
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "응답성공"),
-            @ApiResponse(code = 401, message = """
-                    Authorization 헤더가가 비어있음
-                    Authorization 헤더가 규격에 맞지 않음"""),
-            @ApiResponse(code = 403, message = """
-                    AccessToken이 아님
-                    해당 AccessToken으로 인증에 실패함
-                    """)
+            @ApiResponse(code = 403, message = "AccessToken이 아님"),
+            @ApiResponse(code = 500, message = "해당 토큰이 유효하지 않음")
     })
     public ResponseEntity<HttpStatus> check(){
         return allService.check();
     }
 
+    @GetMapping("/user")
+    @ApiOperation(
+            value = "해당 유저의 정보를 가져오는 API",
+            notes = "이름과 프로필 이미지만 가져옴",
+            response = AllGetUserRes.class
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "응답성공")
+    })
+    public ResponseEntity<AllGetUserRes> getUser(@RequestParam Integer userId){
+        return allService.getUser(userId);
+    }
 }

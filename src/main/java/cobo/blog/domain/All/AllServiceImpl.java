@@ -1,6 +1,7 @@
 package cobo.blog.domain.All;
 
 import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
+import cobo.blog.domain.All.Data.Dto.Res.AllGetUserRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
@@ -143,4 +144,7 @@ public class AllServiceImpl {
         return JsonParser.parseString(result.toString());
     }
 
+    public ResponseEntity<AllGetUserRes> getUser(Integer userId) {
+        return new ResponseEntity<>(new AllGetUserRes(userRepository.getById(userId)), HttpStatus.OK);
+    }
 }
