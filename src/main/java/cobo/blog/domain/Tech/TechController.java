@@ -33,7 +33,8 @@ public class TechController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1", required = true),
-            @ApiImplicitParam(name = "size", value = "페이지의 사이즈", example = "10", required = true)
+            @ApiImplicitParam(name = "size", value = "페이지의 사이즈", example = "10", required = true),
+            @ApiImplicitParam(name = "skillTagId", value = "스킬태그의 Id(0이면 모두 조회)", example = "1", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "응답 성공")
@@ -77,8 +78,12 @@ public class TechController {
             notes = "id로 검색합니다.",
             response = TechTechPostDetailRes.class
     )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "techPostId", value = "검색할 TechPost의 Id", example = "1", required = true)
+    })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "응답 성공")
+            @ApiResponse(code = 200, message = "응답 성공"),
+            @ApiResponse(code = 400, message = "해당하는 Id의 TechPost가 없습니다.")
     })
     public ResponseEntity<TechTechPostDetailRes> readPost(
             @RequestParam("techPostId") Integer techPostId
@@ -89,9 +94,14 @@ public class TechController {
     @PostMapping("/post")
     @ApiOperation(
             value = "techPost를 작성하는 API",
-            notes = "일단 대충 만들어봄",
+            notes = "json 작성이 잘못되면 실행 자체가 안됩니다.",
             response = HttpStatus.class
     )
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "TechPost 업로드 성공"),
+            @ApiResponse(code = 400, message = "잘못된 요청입니다."),
+            @ApiResponse(code = 403, message = "인증 실패")
+    })
     public ResponseEntity<HttpStatus> createPost(
             @RequestBody TechTechPostReq techTechPostReq){
         return techService.createPost(techTechPostReq);
@@ -103,6 +113,11 @@ public class TechController {
             notes = "이것도 일단 대충 만들어봄",
             response = HttpStatus.class
     )
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "TechPost 업로드 성공"),
+            @ApiResponse(code = 400, message = "잘못된 요청입니다."),
+            @ApiResponse(code = 403, message = "인증 실패")
+    })
     public ResponseEntity<HttpStatus> updatePost(
             @RequestBody TechTechUpdateReq techTechUpdateReq
     ){
@@ -115,6 +130,13 @@ public class TechController {
             notes = "이것도 일단 대충 만들어봄",
             response = HttpStatus.class
     )
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "techPostId", value = "삭제할 techPost의 Id", example = "1", required = true)
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "삭제 성공"),
+            @ApiResponse(code = 400, message = "해당 Id의 TechPost가 존재하지 않음")
+    })
     public ResponseEntity<HttpStatus> deletePost(
             @RequestParam("techPostId") Integer techPostId
     ){
@@ -126,11 +148,15 @@ public class TechController {
     )
     @ApiOperation(
             value = "techPost에 이미지를 올리는 API",
-            notes = "일단 만들고 후에 수정"
+            notes = "사용하기 위해 인증 필요"
     )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "응답 성공"),
+            @ApiResponse(code = 403, message = "인증 실패")
+    })
     public ResponseEntity<List<TechImgRes>> createImg(
-            @RequestPart(value = "multipartFile") List<MultipartFile> multipartFileList
+            @RequestPart(value = "multipartFile") MultipartFile multipartFile
     )throws IOException{
-        return techService.createImg(multipartFileList);
+        return techService.createImg(multipartFile);
     }
 }

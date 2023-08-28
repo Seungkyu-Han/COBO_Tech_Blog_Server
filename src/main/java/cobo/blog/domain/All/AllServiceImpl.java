@@ -5,6 +5,7 @@ import cobo.blog.domain.All.Data.Dto.Res.AllGetUserRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import cobo.blog.global.Config.Jwt.JwtTokenProvider;
+import cobo.blog.global.Data.Entity.UserEntity;
 import cobo.blog.global.Repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -21,6 +22,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 
@@ -145,6 +147,9 @@ public class AllServiceImpl {
     }
 
     public ResponseEntity<AllGetUserRes> getUser(Integer userId) {
-        return new ResponseEntity<>(new AllGetUserRes(userRepository.getById(userId)), HttpStatus.OK);
+        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
+        if(userEntityOptional.isEmpty())
+            throw new NullPointerException();
+        return new ResponseEntity<>(new AllGetUserRes(userEntityOptional.get()), HttpStatus.OK);
     }
 }

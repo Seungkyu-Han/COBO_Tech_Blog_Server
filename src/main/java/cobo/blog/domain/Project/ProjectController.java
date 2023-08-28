@@ -2,7 +2,6 @@ package cobo.blog.domain.Project;
 
 import cobo.blog.domain.Project.Data.Dto.Res.ProjectProjectCardRes;
 import cobo.blog.domain.Project.Data.Dto.Res.ProjectProjectRes;
-import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +55,7 @@ public class ProjectController {
     @GetMapping("/project")
     @ApiOperation(
             value = "Project 내용을 가져오는 API",
-            notes = "어렵네",
+            notes = "프로젝트의 번호를 파라미터로 전달",
             response = ProjectProjectRes.class
     )
     @ApiImplicitParams(

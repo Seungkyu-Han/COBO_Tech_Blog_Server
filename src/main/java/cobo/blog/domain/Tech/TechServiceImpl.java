@@ -6,10 +6,7 @@ import cobo.blog.domain.Tech.Data.Dto.Res.TechImgRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechSkillTagRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostDetailRes;
 import cobo.blog.domain.Tech.Data.Dto.Res.TechTechPostRes;
-import cobo.blog.global.Data.Entity.FileEntity;
-import cobo.blog.global.Data.Entity.SkillTagEntity;
-import cobo.blog.global.Data.Entity.TechPostEntity;
-import cobo.blog.global.Data.Entity.TechPostSkillTagMappingEntity;
+import cobo.blog.global.Data.Entity.*;
 import cobo.blog.global.Repository.*;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -32,10 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static cobo.blog.global.Util.PageRequestUtil.pageRequestGenerator;
 
@@ -82,14 +76,14 @@ public class TechServiceImpl {
 
     /**
      * 해당하는 TechPost 글의 개수를 반환하는 메서드
-     * @param skillTagId 필터링하고 싶은 SkillTag (Null 가능)
+     * @param skillTagId 필터링하고 싶은 SkillTag
      * @return ResponseEntity<Long> 해당하는 개수를 반환
      * @Author Seungkyu-Han
      */
     public ResponseEntity<Long> getTechCount(Integer skillTagId) {
         return (skillTagId == 0) ?
                 new ResponseEntity<>(techPostRepository.count(), HttpStatus.OK):
-                new ResponseEntity<>(techPostRepository.countTechPostEntitiesBySkillTagId(skillTagId), HttpStatus.OK);
+                new ResponseEntity<>(techPostRepository.countBySkillTagId(skillTagId), HttpStatus.OK);
     }
 
 
@@ -112,17 +106,20 @@ public class TechServiceImpl {
      */
 
     public ResponseEntity<TechTechPostDetailRes> readPost(Integer techPostId) throws IOException {
-        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
+        Optional<TechPostEntity> techPostEntityOptional = techPostRepository.findById(techPostId);
+        if(techPostEntityOptional.isEmpty())
+            throw new NullPointerException();
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
         HashMap<Integer, String> fileIdUrlMap = new HashMap<>();
         HashMap<String, Integer> fileUrlIdMap = new HashMap<>();
-        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
+        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntityOptional.get()))
         {
             fileIdUrlMap.put(fileEntity.getId(), path + fileEntity.getFileName());
             fileUrlIdMap.put(path + fileEntity.getFileName(), fileEntity.getId());
         }
         return new ResponseEntity<>(
-                new TechTechPostDetailRes(techPostEntity, getStringFromS3(techPostEntity.getFileName()), fileIdUrlMap, fileUrlIdMap), HttpStatus.OK);
+                new TechTechPostDetailRes(techPostEntityOptional.get(),
+                        getStringFromS3(techPostEntityOptional.get().getFileName()), fileIdUrlMap, fileUrlIdMap), HttpStatus.OK);
     }
 
     /**
@@ -134,16 +131,18 @@ public class TechServiceImpl {
     @Transactional
     public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq){
 
-        log.info(techTechPostReq.getDetail());
-
         String uuidName = uploadStringToS3(techTechPostReq.getDetail());
+
+        Optional<UserEntity> userEntityOptional = userRepository.findById(techTechPostReq.getUserId());
+
+        if(userEntityOptional.isEmpty()) throw new NullPointerException();
 
         TechPostEntity techPostEntity = new TechPostEntity
                 (
                         techTechPostReq.getTitle(),
                         techTechPostReq.getContent(),
                         uuidName,
-                        userRepository.getById(techTechPostReq.getUserId())
+                        userEntityOptional.get()
                 );
 
         skillTagMapping(skillTagRepository.getSkillTagEntitiesByIdList(techTechPostReq.getSkillTagIdList()), techPostEntity);
@@ -168,19 +167,21 @@ public class TechServiceImpl {
     @Transactional
     public ResponseEntity<HttpStatus> updatePost(TechTechUpdateReq techTechUpdateReq){
 
-        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techTechUpdateReq.getTechPostId());
+        Optional<TechPostEntity> techPostEntityOptional = techPostRepository.findById(techTechUpdateReq.getTechPostId());
+        if(techPostEntityOptional.isEmpty())
+            throw new NullPointerException();
 
-        techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntity);
-        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
+        techPostSkillTagMappingRepository.deleteAllByTechPost(techPostEntityOptional.get());
+        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntityOptional.get().getFileName());
         deleteImg(techTechUpdateReq.getDeleteFileIdList());
 
         String uuidName = uploadStringToS3(techTechUpdateReq.getDetail());
 
-        techPostEntity.UpdateByTechTechPostReqAndUrl(techTechUpdateReq,uuidName);
+        techPostEntityOptional.get().UpdateByTechTechPostReqAndUrl(techTechUpdateReq,uuidName);
 
-        skillTagMapping(skillTagRepository.getSkillTagEntitiesByIdList(techTechUpdateReq.getSkillTagIdList()), techPostEntity);
+        skillTagMapping(skillTagRepository.getSkillTagEntitiesByIdList(techTechUpdateReq.getSkillTagIdList()), techPostEntityOptional.get());
 
-        techPostRepository.save(techPostEntity);
+        techPostRepository.save(techPostEntityOptional.get());
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -193,13 +194,15 @@ public class TechServiceImpl {
      */
     @Transactional
     public ResponseEntity<HttpStatus> deletePost(Integer techPostId) {
-        TechPostEntity techPostEntity = techPostRepository.findByTechPostId(techPostId);
-        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntity))
+        Optional<TechPostEntity> techPostEntityOptional = techPostRepository.findById(techPostId);
+        if(techPostEntityOptional.isEmpty())
+            throw new NullPointerException();
+        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntityOptional.get()))
             amazonS3Client.deleteObject(bucket, fileEntity.getFileName());
-        fileRepository.deleteAllByTechPost(techPostEntity);
-        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntity.getFileName());
+        fileRepository.deleteAllByTechPost(techPostEntityOptional.get());
+        amazonS3Client.deleteObject(bucket, pathTxt + techPostEntityOptional.get().getFileName());
         redisTemplate.delete("techPost" + techPostId);
-        techPostRepository.delete(techPostRepository.findByTechPostId(techPostId));
+        techPostRepository.delete(techPostEntityOptional.get());
         return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
     }
 
@@ -221,22 +224,20 @@ public class TechServiceImpl {
 
     /**
      * 이미지들을 S3에 업로드하는 메서드
-     * @param multipartFileList multipartFile의 리스트
+     * @param multipartFile 업로드 할 파일
      * @return 해당 이미지의 id와 url 경로를 dto로 담아서 리스트로 전송
      * @throws IOException 바이트로 나누어서 올리는 과정에서 생기는 에러
      * @Author Seungkyu-Han
      */
-    public ResponseEntity<List<TechImgRes>> createImg(List<MultipartFile> multipartFileList) throws IOException{
+    public ResponseEntity<List<TechImgRes>> createImg(MultipartFile multipartFile) throws IOException{
         List<TechImgRes> techImgResList = new ArrayList<>();
-        for(MultipartFile multipartFile : multipartFileList)
-        {
-            String uuidName = uploadToS3(multipartFile);
 
-            FileEntity fileEntity = new FileEntity(uuidName);
-            fileRepository.save(fileEntity);
+        String uuidName = uploadToS3(multipartFile);
 
-            techImgResList.add(new TechImgRes(fileEntity.getId(), uuidName));
-        }
+        FileEntity fileEntity = new FileEntity(uuidName);
+        fileRepository.save(fileEntity);
+
+        techImgResList.add(new TechImgRes(fileEntity.getId(), uuidName));
         return new ResponseEntity<>(techImgResList, HttpStatus.CREATED);
     }
 
