@@ -1,6 +1,5 @@
 package cobo.blog.global.Config.Jwt;
 
-import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -47,20 +46,14 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        try{
-            Integer userId = jwtTokenProvider.getUserId(token, secretKey);
+        Integer userId = jwtTokenProvider.getUserId(token, secretKey);
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
 
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        }
-        catch(MalformedJwtException malformedJwtException){
-            log.error("JWT 토큰 인증에 에러 발생");
-        }
-        finally {
-            filterChain.doFilter(request, response);
-        }
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        filterChain.doFilter(request, response);
+
     }
 
     private boolean isAuthPath(String path){

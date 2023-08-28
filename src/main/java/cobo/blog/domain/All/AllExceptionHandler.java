@@ -4,6 +4,7 @@ import cobo.blog.global.Config.GlobalExceptionHandler;
 import io.lettuce.core.RedisCommandExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.type.SerializationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,5 +60,11 @@ public class AllExceptionHandler extends GlobalExceptionHandler {
     public ResponseEntity<String> AllNullPointerExceptionHandler(){
         log.error("AllNullPointerExceptionHandler : {}", this.getClass());
         return new ResponseEntity<>("Request 한 데이터가 서버에 존재하지 않습니다.", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<String> AllEmptyResultDataAccessExceptionHandler(){
+        log.error("AllEmptyResultDataAccessExceptionHandler : {}", this.getClass());
+        return new ResponseEntity<>("없는 데이터를 사용하였습니다.", HttpStatus.BAD_REQUEST);
     }
 }

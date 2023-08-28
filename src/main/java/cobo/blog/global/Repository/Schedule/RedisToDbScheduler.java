@@ -28,6 +28,11 @@ public class RedisToDbScheduler {
         saveMainHitToDB();
         saveTechPostHitToDb();
     }
+
+    /**
+     * 블로그 전체 조회수를 Redis에서 DB에 반영하는 함수
+     * @Author Seungkyu-Han
+     */
     @Transactional
     public void saveMainHitToDB(){
 
@@ -43,6 +48,11 @@ public class RedisToDbScheduler {
 
         hitRepository.save(hitEntity);
     }
+
+    /**
+     * 각 게글의 조회수를 Redis에서 DB에 반영하는 함수
+     * @Author Seungkyu-Han
+     */
     @Transactional
     public void saveTechPostHitToDb() {
         for(TechPostEntity techPostEntity : techPostRepository.findAll()){
