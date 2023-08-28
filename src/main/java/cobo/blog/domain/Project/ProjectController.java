@@ -22,7 +22,7 @@ public class ProjectController {
 
     @GetMapping("/project-cards")
     @ApiOperation(
-            value = "Project card 내용을 가져오는 API",
+            value = "Project card 내용을 가져오는 API(삭제예정)",
             notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
             response = ProjectProjectCardRes.class
     )
@@ -34,6 +34,25 @@ public class ProjectController {
             @ApiResponse(code = 200, message = "응답 성공")
     })
     public ResponseEntity<List<ProjectProjectCardRes>> getProjectCards(
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size){
+        return projectService.getProjectCards(page, size);
+    }
+
+    @GetMapping("/projects")
+    @ApiOperation(
+            value = "Project card 내용을 가져오는 API",
+            notes = "이것도 전체 다 가져오는 데, 몇개 가져올 지 이야기 필요",
+            response = ProjectProjectCardRes.class
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1", required = true),
+            @ApiImplicitParam(name = "size", value = "페이지의 사이즈", example = "6", required = true)
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답 성공")
+    })
+    public ResponseEntity<List<ProjectProjectCardRes>> getProjects(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size){
         return projectService.getProjectCards(page, size);
