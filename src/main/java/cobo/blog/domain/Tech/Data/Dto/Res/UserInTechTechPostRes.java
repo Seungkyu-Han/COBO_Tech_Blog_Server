@@ -8,6 +8,12 @@ import lombok.Data;
 public class UserInTechTechPostRes {
 
     @ApiModelProperty(
+            value = "작성한 유저의 Id",
+            example = "4"
+    )
+    private Integer userId;
+
+    @ApiModelProperty(
             value = "작성한 유저의 이름",
             example = "한승규"
     )
@@ -25,6 +31,7 @@ public class UserInTechTechPostRes {
     private String imgUrl;
 
     public UserInTechTechPostRes(UserEntity userEntity){
+        this.userId = userEntity.getId();
         this.name = userEntity.getName();
         this.description = userEntity.getDescription();
         this.imgUrl = userEntity.getImgUrl();
