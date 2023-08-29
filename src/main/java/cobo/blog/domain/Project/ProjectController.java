@@ -36,7 +36,7 @@ public class ProjectController {
     public ResponseEntity<List<ProjectProjectCardRes>> getProjects(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size){
-        return projectService.getProjectCards(page, size);
+        return projectService.getProjects(page, size);
     }
 
     @GetMapping("/count")

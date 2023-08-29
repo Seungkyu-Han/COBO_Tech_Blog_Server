@@ -27,7 +27,7 @@ public class ProjectServiceImpl {
      * @param size 한 페이지 당 사이즈
      * @return 페이징 처리 한 프로젝트 카드들의 리스트
      */
-    public ResponseEntity<List<ProjectProjectCardRes>> getProjectCards(Integer page, Integer size) {
+    public ResponseEntity<List<ProjectProjectCardRes>> getProjects(Integer page, Integer size) {
         List<ProjectProjectCardRes> projectProjectCardRes = new ArrayList<>();
         for(ProjectEntity projectEntity : projectRepository.findAll(PageRequestUtil.pageRequestGenerator(page, size, Sort.Direction.DESC, "id")))
             projectProjectCardRes.add(new ProjectProjectCardRes(projectEntity));
