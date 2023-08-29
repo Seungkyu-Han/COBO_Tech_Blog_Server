@@ -8,6 +8,12 @@ import lombok.Data;
 public class HomeTechPostRes {
 
     @ApiModelProperty(
+            value = "TechPost의 Id",
+            example = "1"
+    )
+    private Integer techPostId;
+
+    @ApiModelProperty(
             value = "TechPost 제목",
             example = "한승규의 스프링 고민"
     )
@@ -24,16 +30,11 @@ public class HomeTechPostRes {
     )
     private String Date;
 
-    @ApiModelProperty(
-            value = "해당 TechPost의 url",
-            example = "https://seungkyu-han.tistory.com/"
-    )
-    private String url;
 
     public HomeTechPostRes(TechPostEntity techPost) {
+        this.techPostId = techPost.getId();
         this.title = techPost.getTitle();
         this.user = techPost.getUser().getName();
         this.Date = techPost.getCreatedAt().toString();
-        this.url = techPost.getFileName();
     }
 }
