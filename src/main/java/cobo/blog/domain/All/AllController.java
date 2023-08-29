@@ -6,9 +6,11 @@ import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.io.IOException;
 
 @RestController
@@ -70,27 +72,15 @@ public class AllController {
     @GetMapping("/check")
     @ApiOperation(
             value = "현재 로그인이 되어있는지 체크하는 API",
-            notes = "Authorization 헤더에 AccessToken을 전송"
+            notes = "Authorization 헤더에 AccessToken을 전송",
+            response = AllGetUserRes.class
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "응답성공"),
             @ApiResponse(code = 403, message = "AccessToken이 아님"),
             @ApiResponse(code = 500, message = "해당 토큰이 유효하지 않음")
     })
-    public ResponseEntity<HttpStatus> check(){
-        return allService.check();
-    }
-
-    @GetMapping("/user")
-    @ApiOperation(
-            value = "해당 유저의 정보를 가져오는 API",
-            notes = "이름과 프로필 이미지만 가져옴",
-            response = AllGetUserRes.class
-    )
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "응답성공")
-    })
-    public ResponseEntity<AllGetUserRes> getUser(@RequestParam Integer userId){
-        return allService.getUser(userId);
+    public ResponseEntity<AllGetUserRes> check(@ApiIgnore Authentication authentication){
+        return allService.check(authentication);
     }
 }

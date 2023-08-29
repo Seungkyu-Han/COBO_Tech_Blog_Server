@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,8 +76,13 @@ public class AllServiceImpl {
         return new ResponseEntity<>(new AllLoginRes(userId, accessToken, allPatchLoginReq.getRefreshToken()), HttpStatus.OK);
     }
 
-    public ResponseEntity<HttpStatus> check() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<AllGetUserRes> check(Authentication authentication) {
+        Integer userId = Integer.valueOf(authentication.getName());
+
+        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
+        if(userEntityOptional.isEmpty())
+            throw new NullPointerException();
+        return new ResponseEntity<>(new AllGetUserRes(userEntityOptional.get()), HttpStatus.OK);
     }
 
     private String getKakaoAccessToken(String code) throws IOException {
@@ -144,12 +150,5 @@ public class AllServiceImpl {
         bufferedReader.close();
 
         return JsonParser.parseString(result.toString());
-    }
-
-    public ResponseEntity<AllGetUserRes> getUser(Integer userId) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
-        if(userEntityOptional.isEmpty())
-            throw new NullPointerException();
-        return new ResponseEntity<>(new AllGetUserRes(userEntityOptional.get()), HttpStatus.OK);
     }
 }
