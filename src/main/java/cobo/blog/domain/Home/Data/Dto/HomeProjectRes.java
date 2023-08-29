@@ -12,6 +12,12 @@ import java.util.List;
 public class HomeProjectRes {
 
     @ApiModelProperty(
+            value = "프로젝트의 Id",
+            example = "10"
+    )
+    private Integer projectId;
+
+    @ApiModelProperty(
             value = "프로젝트의 소개 이미지 url",
             example = "https://avatars.githubusercontent.com/u/98071131?s=400&u=9107a0b50b52da5bbc8528157eed1cca34feb3c5&v=4"
     )
@@ -30,13 +36,9 @@ public class HomeProjectRes {
     )
     private String description;
 
-    @ApiModelProperty(
-            value = "해당 project의 url",
-            example = "https://seungkyu-han.tistory.com/"
-    )
-    private String url;
 
     public HomeProjectRes(ProjectEntity project) {
+        this.projectId = project.getId();
         this.imgUrl = project.getImgUrl();
         this.title = project.getTitle();
         this.skillTag = new ArrayList<>();
@@ -44,6 +46,5 @@ public class HomeProjectRes {
         this.skillTag = new ArrayList<>();
         for(ProjectSkillTagMappingEntity projectSkillTagMappingEntity : project.getProjectSkillTagMappings())
             skillTag.add(new SkillTagInHomeProjectRes(projectSkillTagMappingEntity.getSkillTag()));
-        this.url = project.getUrl();
     }
 }
