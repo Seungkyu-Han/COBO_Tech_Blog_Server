@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -37,17 +36,8 @@ public class TechTechPostDetailRes {
     )
     private String detail;
 
-    @ApiModelProperty(
-            value = "파일의 Id와 url를 key value로"
-    )
-    private HashMap<Integer, String> fileIdUrlMap;
 
-    @ApiModelProperty(
-            value = "파일의 url과 id를 key value로 이거랑 <id, url> 중에서 쓰기 편한거만 남기고 삭제할 예정"
-    )
-    private HashMap<String, Integer> fileUrlIdMap;
-
-    public TechTechPostDetailRes(TechPostEntity techPostEntity, String detail, HashMap<Integer, String> fileIdUrlMap, HashMap<String, Integer> fileUrlIdMap){
+    public TechTechPostDetailRes(TechPostEntity techPostEntity, String detail){
         this.user = new UserInTechTechPostRes(techPostEntity.getUser());
         this.title = techPostEntity.getTitle();
         this.createdAt = DateConversion.DateToString(techPostEntity.getCreatedAt());
@@ -55,7 +45,5 @@ public class TechTechPostDetailRes {
         for(TechPostSkillTagMappingEntity techPostSkillTagMappingEntity : techPostEntity.getTechPostSkillTagMappings())
             this.skillTags.add(new SkillTagInTechTechPostRes(techPostSkillTagMappingEntity.getSkillTag()));
         this.detail = detail;
-        this.fileIdUrlMap = fileIdUrlMap;
-        this.fileUrlIdMap = fileUrlIdMap;
     }
 }

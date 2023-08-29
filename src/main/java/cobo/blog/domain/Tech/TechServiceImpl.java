@@ -110,16 +110,9 @@ public class TechServiceImpl {
         if(techPostEntityOptional.isEmpty())
             throw new NullPointerException();
         redisTemplate.opsForValue().increment(techPostRedisName + techPostId);
-        HashMap<Integer, String> fileIdUrlMap = new HashMap<>();
-        HashMap<String, Integer> fileUrlIdMap = new HashMap<>();
-        for(FileEntity fileEntity : fileRepository.findAllByTechPost(techPostEntityOptional.get()))
-        {
-            fileIdUrlMap.put(fileEntity.getId(), path + fileEntity.getFileName());
-            fileUrlIdMap.put(path + fileEntity.getFileName(), fileEntity.getId());
-        }
         return new ResponseEntity<>(
                 new TechTechPostDetailRes(techPostEntityOptional.get(),
-                        getStringFromS3(techPostEntityOptional.get().getFileName()), fileIdUrlMap, fileUrlIdMap), HttpStatus.OK);
+                        getStringFromS3(techPostEntityOptional.get().getFileName())), HttpStatus.OK);
     }
 
     /**
