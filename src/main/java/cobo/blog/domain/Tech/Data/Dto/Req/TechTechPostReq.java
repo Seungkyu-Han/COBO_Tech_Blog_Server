@@ -13,13 +13,6 @@ public class TechTechPostReq {
 
     @NotNull
     @ApiModelProperty(
-            value = "작성한 유저의 UserID(아마 후에 로그인 기능 생성시 삭제 예정, POST 메서드만 사용)",
-            example = "4"
-    )
-    private Integer userId;
-
-    @NotNull
-    @ApiModelProperty(
             value = "작성할 글의 제목",
             example = "대충 무슨무슨 글입니다."
     )

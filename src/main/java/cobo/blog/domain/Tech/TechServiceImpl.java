@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,11 +123,11 @@ public class TechServiceImpl {
      * @Author Seungkyu-Han
      */
     @Transactional
-    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq){
+    public ResponseEntity<HttpStatus> createPost(TechTechPostReq techTechPostReq, Authentication authentication){
 
         String uuidName = uploadStringToS3(techTechPostReq.getDetail());
 
-        Optional<UserEntity> userEntityOptional = userRepository.findById(techTechPostReq.getUserId());
+        Optional<UserEntity> userEntityOptional = userRepository.findById(Integer.valueOf(authentication.getName()));
 
         if(userEntityOptional.isEmpty()) throw new NullPointerException();
 
