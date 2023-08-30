@@ -11,8 +11,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.util.List;
@@ -103,8 +105,9 @@ public class TechController {
             @ApiResponse(code = 403, message = "인증 실패")
     })
     public ResponseEntity<HttpStatus> createPost(
-            @RequestBody TechTechPostReq techTechPostReq){
-        return techService.createPost(techTechPostReq);
+            @RequestBody TechTechPostReq techTechPostReq,
+            @ApiIgnore Authentication authentication){
+        return techService.createPost(techTechPostReq, authentication);
     }
 
     @PatchMapping("/post")
@@ -120,7 +123,7 @@ public class TechController {
     })
     public ResponseEntity<HttpStatus> updatePost(
             @RequestBody TechTechUpdateReq techTechUpdateReq
-    ){
+            ){
         return techService.updatePost(techTechUpdateReq);
     }
 
