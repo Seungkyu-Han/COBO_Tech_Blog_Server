@@ -1,11 +1,13 @@
 package cobo.blog.domain.All;
 
+import cobo.blog.domain.All.Data.Dto.Req.AllDeleteLoginReq;
 import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
 import cobo.blog.domain.All.Data.Dto.Res.AllGetUserRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllLoginRes;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +70,17 @@ public class AllController {
         return allService.login(allPatchLoginReq);
     }
 
+    @DeleteMapping("login")
+    @ApiOperation(
+            value = "로그아웃 시에 서버에 있는 토큰들도 모두 삭제",
+            notes = "Body로 RefreshToken만 보내주면 됩니다."
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "응답성공")
+    })
+    public ResponseEntity<HttpStatus> logout(@RequestBody AllDeleteLoginReq allDeleteLoginReq){
+        return allService.logout(allDeleteLoginReq);
+    }
 
     @GetMapping("/check")
     @ApiOperation(

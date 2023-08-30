@@ -1,5 +1,6 @@
 package cobo.blog.domain.All;
 
+import cobo.blog.domain.All.Data.Dto.Req.AllDeleteLoginReq;
 import cobo.blog.domain.All.Data.Dto.Req.AllPatchLoginReq;
 import cobo.blog.domain.All.Data.Dto.Res.AllGetUserRes;
 import cobo.blog.domain.All.Data.Dto.Res.AllHitRes;
@@ -74,6 +75,13 @@ public class AllServiceImpl {
         String accessToken = jwtTokenProvider.createAccessToken(userId, secretKey);
 
         return new ResponseEntity<>(new AllLoginRes(userId, accessToken, allPatchLoginReq.getRefreshToken()), HttpStatus.OK);
+    }
+
+    public ResponseEntity<HttpStatus> logout(AllDeleteLoginReq allDeleteLoginReq){
+
+        redisTemplate.delete(allDeleteLoginReq.getRefreshToken());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity<AllGetUserRes> check(Authentication authentication) {
