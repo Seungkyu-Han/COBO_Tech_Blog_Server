@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cobo.blog.global.Util.PageRequestUtil.pageRequestGenerator;
 
@@ -106,7 +107,7 @@ public class TechServiceImpl {
      * @Author Seungkyu-Han
      */
 
-    public ResponseEntity<TechTechPostDetailRes> readPost(Integer techPostId) throws IOException {
+    public ResponseEntity<TechTechPostDetailRes> readPost(Integer techPostId){
         Optional<TechPostEntity> techPostEntityOptional = techPostRepository.findById(techPostId);
         if(techPostEntityOptional.isEmpty())
             throw new NullPointerException();
@@ -298,9 +299,9 @@ public class TechServiceImpl {
      * @throws IOException BufferRead 과정에서 에러
      * @Author Seungkyu-Han
      */
-    private String getStringFromS3(String key) throws IOException{
+    private String getStringFromS3(String key){
         S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucket, key));
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(s3Object.getObjectContent()));
-        return bufferedReader.readLine();
+        return bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
     }
 }
